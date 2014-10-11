@@ -1,0 +1,10 @@
+bin/*
+build/*
+repos/*
+ui/*
+conf.properties
+*~
+.*
+!.gitignore
+
+/bin/
