@@ -160,11 +160,11 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		
 		this.menuBar.add(menuFile);
 		
-		/*// == Options ==
+		// == Options ==
 		JMenu menuOptions = new JMenu("Options");
 		menuOptions.setMnemonic(KeyEvent.VK_O);
 		menuOptions.getAccessibleContext().setAccessibleDescription("Program Settings");
-		this.menuBar.add(menuOptions);*/
+		this.menuBar.add(menuOptions);
 		
 		//TODO
 		// WOW LOOK AT ALL OF THESE SETTINGS
