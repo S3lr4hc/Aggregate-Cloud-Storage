@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +44,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import main.DBConnectionFactory;
 import main.DriveStoreEventListener;
 import main.RemoteDrive;
 import main.RemoteDriveFactory;
@@ -114,15 +116,21 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	private JButton cmdUpload;
 	
 	/**
+	 * String that shows the current user
+	 */
+	private String userAccount;
+	
+	/**
 	 * Create a MainWindow to display a list of RemoteDrives
 	 * @param driveStore The RemoteDrives to display
 	 */
-	public MainWindow(RemoteDriveStore driveStore)
+	public MainWindow(RemoteDriveStore driveStore, String userAccount)
 	{
 		super();
 		
 		this.factory = new RemoteDriveFactory();
 		this.remoteDrives = driveStore;
+		this.userAccount = userAccount;
 		
 		// Set defaults
 		this.setTitle("Fusein");
@@ -444,7 +452,9 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.statusBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		
 		//TODO Implement a functional status bar
-		JLabel versionLabel = new JLabel("Fusein -- Project Deliverable 4");
+		//JLabel versionLabel = new JLabel("Fusein -- Project Deliverable 4");
+		//FIX THIS TO SHOW CURRENT USER
+		JLabel versionLabel = new JLabel("Logged in as " + this.userAccount);
 		this.statusBar.add(versionLabel);
 		
 		this.add(this.statusBar, BorderLayout.PAGE_END);
@@ -554,8 +564,12 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	@Override
 	public void windowClosing(WindowEvent event)
 	{
+		Connection conn = DBConnectionFactory.getInstance().getConnection();
+		LoginWindow loginWindow = new LoginWindow(conn);
+		
 		this.remoteDrives.saveToFile("conf.properties");
 		this.dispose();
+		loginWindow.setVisible(true);
 	}
 
 	@Override

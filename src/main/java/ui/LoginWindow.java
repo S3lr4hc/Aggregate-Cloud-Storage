@@ -18,8 +18,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import main.DBConnectionFactory;
+import main.RemoteDriveStore;
 
 import com.mysql.jdbc.PreparedStatement;
 
@@ -29,11 +31,13 @@ public class LoginWindow extends JFrame implements WindowListener{
 	private Connection conn = null;
 	private PreparedStatement stmt = null;
 	private ResultSet rs = null;
+	private String userAccount = null;
 	
 	public LoginWindow(final Connection conn) {
 		
 		super();
 		
+		final RemoteDriveStore driveStore = new RemoteDriveStore();
 		this.conn = conn;
 		
 		// Set defaults
@@ -86,6 +90,7 @@ public class LoginWindow extends JFrame implements WindowListener{
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String sql = "SELECT * from UserAccount where username = ? and password = ?";
+        		final JFrame loginWindow = new LoginWindow(conn);
         		
         		try {
 					stmt = (PreparedStatement) conn.prepareStatement(sql);
@@ -95,6 +100,7 @@ public class LoginWindow extends JFrame implements WindowListener{
 					
 					if(rs.next()) {
 						JOptionPane.showMessageDialog(null, "Correct!");
+						userAccount = rs.getString("username");
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Error!");
@@ -102,6 +108,15 @@ public class LoginWindow extends JFrame implements WindowListener{
 				} catch (SQLException e2) {
 					JOptionPane.showMessageDialog(null, e2);
 				}
+        		loginWindow.setVisible(false);
+        		final JFrame mainWindow = new MainWindow(driveStore, userAccount);
+        		SwingUtilities.invokeLater(new Runnable() {
+        			public void run()
+        			{
+        				mainWindow.setVisible(true);
+        			}
+        		});
+        		driveStore.loadFromFile("conf.properties");
         	}
         });
         this.add(loginButton, BorderLayout.PAGE_END);

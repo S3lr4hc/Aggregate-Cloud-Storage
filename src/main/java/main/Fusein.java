@@ -1,11 +1,14 @@
 
 package main;
 
+import java.sql.Connection;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import ui.LoginWindow;
 import ui.MainWindow;
 
 /**
@@ -34,7 +37,7 @@ public class Fusein
 		});
 		
 		// Load the configuration now, so the file list will populate.
-		driveStore.loadFromFile("conf.properties");
+		//driveStore.loadFromFile("conf.properties");
 	}
 	
 	/**
@@ -53,9 +56,12 @@ public class Fusein
 			System.err.println("Couldn't set system theme!");
 			System.err.println("Falling back on cross-platform theme.");
 		}
-		
+		/*String userAccount = "ChriSmith";*/
 		// Spawn and display the main window
-		JFrame mainWindow = new MainWindow(driveStore);
-		mainWindow.setVisible(true);
+		Connection conn = DBConnectionFactory.getInstance().getConnection();
+		JFrame loginWindow = new LoginWindow(conn);
+		loginWindow.setVisible(true);
+		/*JFrame mainWindow = new MainWindow(driveStore, userAccount);
+		mainWindow.setVisible(true);*/
 	}
 }
