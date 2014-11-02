@@ -62,6 +62,8 @@ public class GDrive implements RemoteDrive {
 	private String authToken;
 	private Drive service;
 	private About info; 
+	private double totalSize;
+    private double usedSize;
 
 	/**
 	 * Default constructor to initialize data
@@ -520,5 +522,15 @@ public class GDrive implements RemoteDrive {
 			}
 		}
 		
+	}
+
+	@Override
+	public double getTotalSize() {
+		return this.info.getQuotaBytesTotal();
+	}
+
+	@Override
+	public double getUsedSize() {
+		return this.info.getQuotaBytesUsed();
 	}
 }

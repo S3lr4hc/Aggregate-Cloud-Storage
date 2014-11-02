@@ -64,4 +64,18 @@ public interface RemoteDrive {
 	 * @return The root folder.
 	 */
 	public RemoteFolder getRootFolder();
+	
+	/**
+     * Get the total available size of the current account on the current service
+     *
+     * @return  The total available size in bytes
+     */
+    public double getTotalSize();
+
+    /**
+     * Get the current amount of used space for the current account on the current service
+     *
+     * @return  The amount of currently used space in bytes
+     */
+    public double getUsedSize();
 }

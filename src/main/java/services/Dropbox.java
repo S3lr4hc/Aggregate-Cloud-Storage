@@ -15,7 +15,6 @@ import main.RemoteDrive;
 import main.RemoteEntry;
 import main.RemoteFile;
 import main.RemoteFolder;
-
 import com.dropbox.core.DbxAccountInfo;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
@@ -370,6 +369,26 @@ public class Dropbox implements RemoteDrive {
 		@Override
 		public RemoteFile asFile() {
 			return null;
+		}
+	}
+
+	@Override
+	public double getTotalSize() {
+		try {
+			return client.getAccountInfo().quota.total;
+		} catch (DbxException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	@Override
+	public double getUsedSize() {
+		try {
+			return client.getAccountInfo().quota.normal;
+		} catch (DbxException e) {
+			e.printStackTrace();
+			return 0;
 		}
 	}
 }
