@@ -40,6 +40,8 @@ public class LoginWindow extends JFrame implements WindowListener{
 		final RemoteDriveStore driveStore = new RemoteDriveStore();
 		this.conn = conn;
 		
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 		// Set defaults
 		this.setTitle("ACS");
 		this.setResizable(false);
@@ -83,6 +85,8 @@ public class LoginWindow extends JFrame implements WindowListener{
         loginField.setPreferredSize(new Dimension(100, 30));
         panelForTextFields.add(loginField);
         
+        this.dispose();
+        
         // Button for Logging in
         JButton loginButton = new JButton("Login");
         loginButton.addActionListener(new ActionListener() {
@@ -90,7 +94,6 @@ public class LoginWindow extends JFrame implements WindowListener{
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String sql = "SELECT * from UserAccount where username = ? and password = ?";
-        		final JFrame loginWindow = new LoginWindow(conn);
         		
         		try {
 					stmt = (PreparedStatement) conn.prepareStatement(sql);
@@ -108,7 +111,7 @@ public class LoginWindow extends JFrame implements WindowListener{
 				} catch (SQLException e2) {
 					JOptionPane.showMessageDialog(null, e2);
 				}
-        		loginWindow.setVisible(false);
+        		LoginWindow.this.dispose();
         		final JFrame mainWindow = new MainWindow(driveStore, userAccount);
         		SwingUtilities.invokeLater(new Runnable() {
         			public void run()
@@ -120,7 +123,6 @@ public class LoginWindow extends JFrame implements WindowListener{
         	}
         });
         this.add(loginButton, BorderLayout.PAGE_END);
-        
 	}
 
 	public static void main(String[] args) {

@@ -6,11 +6,16 @@
 
 package ui;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+import javax.swing.JFrame;
+
 /**
  *
  * @author LCM
  */
-public class ShareAllocationView extends javax.swing.JFrame {
+public class ShareAllocationView extends JFrame implements WindowListener {
 
     /**
      * Creates new form ShareAllocationView
@@ -37,7 +42,7 @@ public class ShareAllocationView extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         jLabel1.setText("Google Drive");
@@ -145,4 +150,26 @@ public class ShareAllocationView extends javax.swing.JFrame {
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JProgressBar jProgressBar2;
     // End of variables declaration//GEN-END:variables
+	@Override
+	public void windowOpened(WindowEvent e) { }
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		ShareAllocationView.this.dispose();
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) { }
+
+	@Override
+	public void windowIconified(WindowEvent e) { }
+
+	@Override
+	public void windowDeiconified(WindowEvent e) { }
+
+	@Override
+	public void windowActivated(WindowEvent e) { }
+
+	@Override
+	public void windowDeactivated(WindowEvent e) { }
 }

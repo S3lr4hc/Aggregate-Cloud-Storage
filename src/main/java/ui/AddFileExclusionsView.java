@@ -6,11 +6,16 @@
 
 package ui;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+import javax.swing.JFrame;
+
 /**
  *
  * @author LCM
  */
-public class AddFileExclusionsView extends javax.swing.JFrame {
+public class AddFileExclusionsView extends JFrame implements WindowListener {
 
     /**
      * Creates new form AddFileExclusionsView
@@ -37,7 +42,7 @@ public class AddFileExclusionsView extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         CustomExclusionList = new javax.swing.JList();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         jCheckBox1.setText("Google Documents");
@@ -157,4 +162,45 @@ public class AddFileExclusionsView extends javax.swing.JFrame {
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		AddFileExclusionsView.this.dispose();
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

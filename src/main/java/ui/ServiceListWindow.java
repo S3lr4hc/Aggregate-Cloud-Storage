@@ -196,7 +196,8 @@ public class ServiceListWindow extends JFrame implements WindowListener, DriveSt
 		/**
 		 * An Icon Representing the service
 		 */
-		ImageIcon icon;
+		ImageIcon iconDropbox;
+		ImageIcon iconGDrive;
 		
 		/**
 		 * Create a default DriveCellRenderer
@@ -205,7 +206,8 @@ public class ServiceListWindow extends JFrame implements WindowListener, DriveSt
 		{
 			super();
 			
-			this.icon = new ImageIcon(ClassLoader.getSystemResource("service_icons/dropbox.png"));
+			this.iconDropbox = new ImageIcon(ClassLoader.getSystemResource("service_icons/dropbox.png"));
+			this.iconGDrive = new ImageIcon(ClassLoader.getSystemResource("service_icons/gdrive.png"));
 		}
 
 		@Override
@@ -213,7 +215,9 @@ public class ServiceListWindow extends JFrame implements WindowListener, DriveSt
 				JList<? extends RemoteDrive> list, RemoteDrive drive,
 				int index, boolean isSelected, boolean hasFocus) {
 			this.setText(String.format("%s's %s", drive.getUsername(), drive.getServiceNiceName()));
-			this.setIcon(this.icon);
+			if(drive.getServiceNiceName().equals("Dropbox"))
+				this.setIcon(this.iconDropbox);
+			else this.setIcon(this.iconGDrive);
 			
 			Color background = Color.WHITE;
 			
