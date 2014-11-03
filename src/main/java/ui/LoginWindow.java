@@ -10,6 +10,7 @@ import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,6 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import main.DBConnectionFactory;
+import main.RemoteDrive;
 import main.RemoteDriveStore;
 
 import com.mysql.jdbc.PreparedStatement;
@@ -113,6 +115,7 @@ public class LoginWindow extends JFrame implements WindowListener{
 				}
         		LoginWindow.this.dispose();
         		final JFrame mainWindow = new MainWindow(driveStore, userAccount);
+        		final MainWindow mw = new MainWindow(driveStore, userAccount);
         		SwingUtilities.invokeLater(new Runnable() {
         			public void run()
         			{

@@ -97,9 +97,9 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	private FolderTree folderTree;
 	
 	/**
-	 * Used to display status information about operations
+	 * Used to display space info of drive
 	 */
-	private JProgressBar statusBar;
+	public JProgressBar statusBar;
 	
 	/**
 	 * A vertical listing of files.
@@ -124,12 +124,12 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	/**
 	 * Double that shows the total space
 	 */
-	private double totalSize;
+	private static double totalSize;
 	
 	/**
 	 * Double that shows the used space
 	 */
-	private double usedSize;
+	private static double usedSize;
 	
 	/**
 	 * Create a MainWindow to display a list of RemoteDrives
@@ -298,6 +298,16 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		});
 		this.toolBar.add(cmdShowServices);
 		
+		JButton cmdRefresh = new JButton("Refresh Bar");
+		cmdRefresh.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event)
+			{
+				getOverallDriveSize();
+			}
+		});
+		this.toolBar.add(cmdRefresh);
+		
 		this.add(this.toolBar, BorderLayout.PAGE_START);
 		
 		// ==== The Rest ====
@@ -350,14 +360,6 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	                
 	                for(RemoteDrive drive : drives) {
 	                	System.out.println("Reloading "+drive.getUsername()+ "'s " +drive.getServiceNiceName());
-	                	MainWindow.this.totalSize += drive.getTotalSize();
-	                	MainWindow.this.usedSize += drive.getUsedSize();
-	                	System.out.println(usedSize + "/" + totalSize);
-	                	double overAll = (usedSize/totalSize) * 100;
-	                	overAll = Math.ceil(overAll);
-	                	System.out.println("Overall: " + overAll);
-	                	System.out.println("Int Mode" + ((int)overAll));
-	            		MainWindow.this.statusBar.setValue((int)overAll);
 	                	final RemoteFolder root = drive.getRootFolder();
 	                	(new SwingWorker<List<RemoteEntry>, Void>() {
 
@@ -476,28 +478,32 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		//TODO Implement a functional status bar
 		//JLabel versionLabel = new JLabel("Fusein -- Project Deliverable 4");
 		//FIX THIS TO SHOW CURRENT USER
+		JButton refreshButton = new JButton("Refresh");
 		JLabel versionLabel = new JLabel("Logged in as " + this.userAccount);
 		this.statusBar.add(versionLabel);
 		this.statusBar.setStringPainted(true);
-		
+		this.add(refreshButton, BorderLayout.PAGE_END);
 		this.add(this.statusBar, BorderLayout.PAGE_END);
 		
 		// ==== CALLBACKS ====
 		this.remoteDrives.addEventListener(this);
 		this.addWindowListener(this);
-		
-		
+	}
+	
+	public void getOverallDriveSize() {
 		List<RemoteDrive> drives = getDriveStore().getAllDrives();
 		
 		for(RemoteDrive drive: drives) {
 			System.out.println(drive.getTotalSize());
 			System.out.println(drive.getUsedSize());
-			this.totalSize += drive.getTotalSize();
-			this.usedSize += drive.getUsedSize();
+			MainWindow.totalSize += drive.getTotalSize();
+			MainWindow.usedSize += drive.getUsedSize();
 		}
 		System.out.println(usedSize + "/" + totalSize);
-		//overAll = (usedSize/totalSize) * 100;
-		//statusBar.setValue(overAll);
+		double overAll = (usedSize/totalSize) * 100;
+    	overAll = Math.ceil(overAll);
+    	System.out.println("Overall: " + overAll);
+		MainWindow.this.statusBar.setValue((int)overAll);
 	}
 	
 	/**
