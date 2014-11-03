@@ -115,7 +115,6 @@ public class LoginWindow extends JFrame implements WindowListener{
 				}
         		LoginWindow.this.dispose();
         		final JFrame mainWindow = new MainWindow(driveStore, userAccount);
-        		final MainWindow mw = new MainWindow(driveStore, userAccount);
         		SwingUtilities.invokeLater(new Runnable() {
         			public void run()
         			{

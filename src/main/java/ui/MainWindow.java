@@ -34,6 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -99,7 +100,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	/**
 	 * Used to display space info of drive
 	 */
-	public JProgressBar statusBar;
+	private JProgressBar statusBar;
 	
 	/**
 	 * A vertical listing of files.
@@ -326,8 +327,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		lbl.setHorizontalAlignment(SwingConstants.CENTER);
 		fileViewBar.add(lbl);
 		
-		this.totalSize = 0;
-		this.usedSize = 0;
+		MainWindow.totalSize = 0;
+		MainWindow.usedSize = 0;
 		
 		// Dummy root
 		this.folderTree = new FolderTree();
@@ -488,14 +489,23 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		// ==== CALLBACKS ====
 		this.remoteDrives.addEventListener(this);
 		this.addWindowListener(this);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				getOverallDriveSize();
+			}
+		});
 	}
 	
 	public void getOverallDriveSize() {
+		MainWindow.totalSize = 0;
+		MainWindow.usedSize = 0;
 		List<RemoteDrive> drives = getDriveStore().getAllDrives();
 		
 		for(RemoteDrive drive: drives) {
 			System.out.println(drive.getTotalSize());
 			System.out.println(drive.getUsedSize());
+			System.out.println();
 			MainWindow.totalSize += drive.getTotalSize();
 			MainWindow.usedSize += drive.getUsedSize();
 		}
