@@ -8,8 +8,12 @@ package ui;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
+
+import main.RemoteDrive;
+import main.RemoteDriveStore;
 
 /**
  *
@@ -17,10 +21,25 @@ import javax.swing.JFrame;
  */
 public class ShareAllocationView extends JFrame implements WindowListener {
 
+	/**
+	 * The current list of RemoteDrives
+	 */
+	private RemoteDriveStore remoteDrives;
+	
+	private double GoogletotalSize;
+	
+	private double GoogleusedSize;
+	
+	private double DropboxtotalSize;
+	
+	private double DropboxusedSize;
+	
     /**
      * Creates new form ShareAllocationView
      */
-    public ShareAllocationView() {
+    public ShareAllocationView(RemoteDriveStore remoteDrives) {
+        this.remoteDrives = remoteDrives;
+        
         initComponents();
     }
 
@@ -32,16 +51,56 @@ public class ShareAllocationView extends JFrame implements WindowListener {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
+    	ArrayList<RemoteDrive> serviceData = remoteDrives.getAllDrives();
+    	
         jProgressBar1 = new javax.swing.JProgressBar();
         jProgressBar2 = new javax.swing.JProgressBar();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        /*jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-
+        jLabel6 = new javax.swing.JLabel();*/
+        GoogleusedSize = 0;
+        GoogletotalSize = 0;
+        DropboxtotalSize = 0;
+        DropboxusedSize = 0;
+        
+        this.setTitle("Share Allocation");
+        
+        this.jProgressBar1.setStringPainted(true);
+        this.jProgressBar2.setStringPainted(true);
+        
+        for(RemoteDrive drive: serviceData) {
+        	if(drive.getServiceNiceName().equals("Google Drive")) {
+				System.out.println(drive.getTotalSize());
+				System.out.println(drive.getUsedSize());
+				System.out.println();
+				this.GoogletotalSize += drive.getTotalSize();
+				this.GoogleusedSize += drive.getUsedSize();
+				System.out.println(GoogleusedSize + "/" + GoogletotalSize);
+				double overAll = (GoogleusedSize/GoogletotalSize) * 100;
+		    	overAll = Math.ceil(overAll);
+		    	System.out.println("GoogleDrive Overall: " + overAll);
+				this.jProgressBar1.setValue((int)overAll);
+        	}
+		}
+        
+        for(RemoteDrive drive: serviceData) {
+        	if(drive.getServiceNiceName().equals("Dropbox")) {
+				System.out.println(drive.getTotalSize());
+				System.out.println(drive.getUsedSize());
+				System.out.println();
+				this.DropboxtotalSize += drive.getTotalSize();
+				this.DropboxusedSize += drive.getUsedSize();
+				System.out.println(DropboxusedSize + "/" + DropboxtotalSize);
+				double overAll = (DropboxusedSize/DropboxtotalSize) * 100;
+		    	overAll = Math.ceil(overAll);
+		    	System.out.println("Dropbox Overall: " + overAll);
+				this.jProgressBar2.setValue((int)overAll);
+        	}
+		}
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
@@ -49,13 +108,13 @@ public class ShareAllocationView extends JFrame implements WindowListener {
 
         jLabel2.setText("Dropbox");
 
-        jLabel3.setText("Legend");
+        /*jLabel3.setText("Legend");
 
         jLabel4.setText("Unified Cloud Files");
 
         jLabel5.setText("Untracked User Files");
 
-        jLabel6.setText("Whole Files");
+        jLabel6.setText("Whole Files");*/
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -66,12 +125,12 @@ public class ShareAllocationView extends JFrame implements WindowListener {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            /*.addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)*/
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
+                        //.addComponent(jLabel3)
                         .addGap(149, 149, 149))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -92,13 +151,13 @@ public class ShareAllocationView extends JFrame implements WindowListener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel3)
+                /*.addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
+                .addComponent(jLabel4)*/
                 .addContainerGap())
         );
 
@@ -133,20 +192,20 @@ public class ShareAllocationView extends JFrame implements WindowListener {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        /*java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShareAllocationView().setVisible(true);
+                new ShareAllocationView(remoteDrives).setVisible(true);
             }
-        });
+        });*/
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    /*private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel6;*/
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JProgressBar jProgressBar2;
     // End of variables declaration//GEN-END:variables

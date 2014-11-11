@@ -190,7 +190,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView();
+				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView(remoteDrives);
 				fileExclusionsView.setVisible(true);
 			}
 		});
@@ -201,7 +201,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ShareAllocationView shareAllocView = new ShareAllocationView();
+				ShareAllocationView shareAllocView = new ShareAllocationView(remoteDrives);
 				shareAllocView.setVisible(true);
 			}
 		});
@@ -238,12 +238,12 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			public void actionPerformed(ActionEvent event)
 			{
 				FolderTreeNode node = (FolderTreeNode)MainWindow.this.folderTree.getLastSelectedPathComponent();
-				if (node == null) {
+				/*if (node == null) {
 					return;
-				}
-				RemoteFolder folder = node.getFolder();
+				}*/
+				//RemoteFolder folder = node.getFolder();
 				
-				UploadFileDialog ufd = new UploadFileDialog(remoteDrives, folder);
+				UploadFileDialog ufd = new UploadFileDialog(remoteDrives/*, folder*/);
 				ufd.setVisible(true);
 			}
 		});

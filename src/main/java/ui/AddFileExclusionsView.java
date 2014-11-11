@@ -8,19 +8,41 @@ package ui;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+import main.RemoteDrive;
+import main.RemoteDriveStore;
 
 /**
  *
  * @author LCM
  */
 public class AddFileExclusionsView extends JFrame implements WindowListener {
-
+	
+	/**
+	 * The current list of RemoteDrives
+	 */
+	private RemoteDriveStore remoteDrives;
+	
+	/**
+	 * Double that shows the total space
+	 */
+	private double totalSize;
+	
+	/**
+	 * Double that shows the used space
+	 */
+	private double usedSize;
+	
     /**
      * Creates new form AddFileExclusionsView
      */
-    public AddFileExclusionsView() {
+    public AddFileExclusionsView(RemoteDriveStore remoteDrives) {
+    	this.remoteDrives = remoteDrives;
+    	
         initComponents();
     }
 
@@ -41,9 +63,13 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         CustomExclusionList = new javax.swing.JList();
+        
+        this.setTitle("File Type Exclusion");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
+        
+        jProgressBar1.setStringPainted(true);
 
         jCheckBox1.setText("Google Documents");
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -111,8 +137,33 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         );
 
         pack();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				getOverallDriveSize();
+			}
+		});
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    public void getOverallDriveSize() {
+		this.totalSize = 0;
+		this.usedSize = 0;
+		List<RemoteDrive> drives = remoteDrives.getAllDrives();
+		
+		for(RemoteDrive drive: drives) {
+			System.out.println(drive.getTotalSize());
+			System.out.println(drive.getUsedSize());
+			System.out.println();
+			this.totalSize += drive.getTotalSize();
+			this.usedSize += drive.getUsedSize();
+		}
+		System.out.println(usedSize + "/" + totalSize);
+		double overAll = (usedSize/totalSize) * 100;
+    	overAll = Math.ceil(overAll);
+    	System.out.println("Overall: " + overAll);
+		this.jProgressBar1.setValue((int)overAll);
+	}
+    
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox1ActionPerformed
@@ -145,11 +196,11 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        /*java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new AddFileExclusionsView().setVisible(true);
             }
-        });
+        });*/
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

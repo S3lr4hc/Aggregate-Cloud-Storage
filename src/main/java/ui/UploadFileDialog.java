@@ -44,11 +44,11 @@ public class UploadFileDialog extends JPanel {
 	 * Create a dialog for uploading a file for a list of RemoteDrives
 	 * @param remoteDrives The current list of RemoteDrives
 	 */
-	public UploadFileDialog(RemoteDriveStore remoteDrives, RemoteFolder folder) {
+	public UploadFileDialog(RemoteDriveStore remoteDrives) {
 		super(new BorderLayout());
 		
 		this.remoteDrives = remoteDrives;
-		this.folder = folder;
+		//this.folder = folder;
 		
 		initUploadFile();
 	}
