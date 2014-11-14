@@ -79,25 +79,22 @@ public class ShareAllocationView extends JFrame implements WindowListener {
 				this.GoogletotalSize += drive.getTotalSize();
 				this.GoogleusedSize += drive.getUsedSize();
 				System.out.println(GoogleusedSize + "/" + GoogletotalSize);
-				double overAll = (GoogleusedSize/GoogletotalSize) * 100;
-		    	overAll = Math.ceil(overAll);
-		    	System.out.println("GoogleDrive Overall: " + overAll);
-				this.jProgressBar1.setValue((int)overAll);
+				double GoogleoverAll = (GoogleusedSize/GoogletotalSize) * 100;
+				GoogleoverAll = Math.ceil(GoogleoverAll);
+		    	System.out.println("GoogleDrive Overall: " + GoogleoverAll);
+				this.jProgressBar1.setValue((int)GoogleoverAll);
         	}
-		}
-        
-        for(RemoteDrive drive: serviceData) {
-        	if(drive.getServiceNiceName().equals("Dropbox")) {
+        	else if(drive.getServiceNiceName().equals("Dropbox")) {
 				System.out.println(drive.getTotalSize());
 				System.out.println(drive.getUsedSize());
 				System.out.println();
 				this.DropboxtotalSize += drive.getTotalSize();
 				this.DropboxusedSize += drive.getUsedSize();
 				System.out.println(DropboxusedSize + "/" + DropboxtotalSize);
-				double overAll = (DropboxusedSize/DropboxtotalSize) * 100;
-		    	overAll = Math.ceil(overAll);
-		    	System.out.println("Dropbox Overall: " + overAll);
-				this.jProgressBar2.setValue((int)overAll);
+				double DropboxoverAll = (DropboxusedSize/DropboxtotalSize) * 100;
+				DropboxoverAll = Math.ceil(DropboxoverAll);
+		    	System.out.println("Dropbox Overall: " + DropboxoverAll);
+				this.jProgressBar2.setValue((int)DropboxoverAll);
         	}
 		}
         
