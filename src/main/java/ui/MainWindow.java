@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.Enumeration;
@@ -28,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -132,6 +134,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	 */
 	private static double usedSize;
 	
+	private String currfilePath;
 	/**
 	 * Create a MainWindow to display a list of RemoteDrives
 	 * @param driveStore The RemoteDrives to display
@@ -143,6 +146,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.factory = new RemoteDriveFactory();
 		this.remoteDrives = driveStore;
 		this.userAccount = userAccount;
+		this.currfilePath = System.getProperty("user.home");
 		
 		// Set defaults
 		this.setTitle("Fusein");
@@ -207,6 +211,29 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		});
 		menuOptions.add(cmdShareAlloc);
 		
+		JMenuItem cmdFileLocation = new JMenuItem("Set File Location");
+		cmdFileLocation.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String in = JOptionPane.showInputDialog(null, "Current File Path: "+ currfilePath + "\nSet file path: ", currfilePath);
+				if (in != null && in.length() > 0) {
+					int res;
+					if(new File(in).isDirectory()) {
+						currfilePath = in;
+						res = JOptionPane.showConfirmDialog(null,
+							"File Path Change Successful!", "Message",
+							JOptionPane.PLAIN_MESSAGE);
+					} else {
+						res = JOptionPane.showConfirmDialog(null,
+							"File Path Change Failed!", "Message",
+							JOptionPane.PLAIN_MESSAGE);
+					}
+				}
+			}
+		});
+		menuOptions.add(cmdFileLocation);
+		
 		this.menuBar.add(menuOptions);
 		//TODO
 		// WOW LOOK AT ALL OF THESE SETTINGS
@@ -256,7 +283,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			public void actionPerformed(ActionEvent event)
 			{
 				RemoteFile fileOwner = ((RemoteFile)fileList.getSelectedValue());
-				DownloadFileDialog dfd = new DownloadFileDialog(fileOwner);
+				DownloadFileDialog dfd = new DownloadFileDialog(fileOwner, currfilePath);
 				dfd.setVisible(true);
 			}
 		});

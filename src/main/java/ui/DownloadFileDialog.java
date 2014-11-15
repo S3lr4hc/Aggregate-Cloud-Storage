@@ -27,14 +27,17 @@ public class DownloadFileDialog extends JPanel {
 	 * The RemoteFile representing the file to be downloaded
 	 */
 	private RemoteFile fileToDownload;
+	
+	private String filePath;
 
 	/**
 	 * Create a dialog to download a file
 	 * @param fileOwner RemoteFile representing the file to be downloaded
 	 */
-	public DownloadFileDialog(RemoteFile fileToDownload) {
+	public DownloadFileDialog(RemoteFile fileToDownload, String filePath) {
 		super(new BorderLayout());
 		this.fileToDownload = fileToDownload;
+		this.filePath = filePath;
 		initDialog();
 	}
 	
@@ -43,10 +46,9 @@ public class DownloadFileDialog extends JPanel {
 	 * 
 	 */
 	public void initDialog() {
-		String in = JOptionPane.showInputDialog(this,
-				"Enter a local path for the file (including name and extension):");
-		if (in != null && in.length() > 0) {
-			DownloadMethodWorker dwm = new DownloadMethodWorker(in);
+		String fullPath = filePath + "\\" + fileToDownload.getName();
+		if (fullPath != null && fullPath.length() > 0) {
+			DownloadMethodWorker dwm = new DownloadMethodWorker(fullPath);
 			dwm.execute();
 
 			boolean succ;

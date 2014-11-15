@@ -272,6 +272,30 @@ public class GDrive implements RemoteDrive {
 			mimeTypes.put("application/vnd.google-apps.drawing", "application/pdf");
 			mimeTypes.put("application/vnd.google-apps.presentation", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
 			
+			HashMap<String, String> mimeTypes2 = new HashMap<String, String>();
+			mimeTypes2.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx");
+			mimeTypes2.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx");
+			mimeTypes2.put("application/pdf", ".pdf");
+			mimeTypes2.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", ".pptx");
+			mimeTypes2.put("application/vnd.ms-excel", ".xls");
+			mimeTypes2.put("text/xml", ".xml");
+			mimeTypes2.put("application/x-httpd-php", "php");
+			mimeTypes2.put("image/jpeg", "jpg");
+			mimeTypes2.put("image/png", "png");
+			mimeTypes2.put("image/gif", "gif");
+			mimeTypes2.put("image/bmp", "bmp");
+			mimeTypes2.put("text/plain", "txt");
+			mimeTypes2.put("application/msword", "doc");
+			mimeTypes2.put("text/js", "js");
+			mimeTypes2.put("application/x-shockwave-flash", "swf");
+			mimeTypes2.put("audio/mpeg", "mp3");
+			mimeTypes2.put("application/zip", "zip");
+			mimeTypes2.put("application/rar", "rar");
+			mimeTypes2.put("application/tar", "tar");
+			mimeTypes2.put("application/arj", "arj");
+			mimeTypes2.put("application/cab", "cab");
+	        mimeTypes2.put("text/html", "html");
+			
 			com.google.api.services.drive.model.File file = null;
 			try {
 				file = service.files().get(remoteFilePath).execute();
@@ -284,13 +308,19 @@ public class GDrive implements RemoteDrive {
 			
 			String downloadUrl = "";
 			String mimeType = "";
+			String mimeType2 = "";
 			
 			if (file.getDownloadUrl() == null){
 				mimeType = file.getMimeType();
 				mimeType = mimeTypes.get(mimeType);
+				mimeType2 = mimeTypes2.get(mimeType);
 				downloadUrl = file.getExportLinks().get(mimeType);
 			}
 			else {
+				if(file.getFileExtension().isEmpty()) {
+					mimeType = file.getMimeType();
+					mimeType2 = mimeTypes2.get(mimeType);
+				}
 				downloadUrl = file.getDownloadUrl();
 			}
 			
@@ -313,8 +343,7 @@ public class GDrive implements RemoteDrive {
 			    	return false;
 			      
 			}
-			
-			java.io.File localFile = new java.io.File(localPath);
+			java.io.File localFile = new java.io.File(localPath+mimeType2);
 			
 			FileOutputStream os = null;
 			try {
