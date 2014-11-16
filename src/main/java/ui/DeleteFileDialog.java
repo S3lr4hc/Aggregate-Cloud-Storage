@@ -46,7 +46,7 @@ public class DeleteFileDialog extends JPanel {
 	private void initDialog() {
 		int res = JOptionPane.showConfirmDialog(this,
 				String.format("Are you sure you want to delete the file \"%s\" from your %s account?",
-						      this.fileToDelete.getPath(), this.fileToDelete.getRemoteDrive().getServiceNiceName()));
+						      this.fileToDelete.getName(), this.fileToDelete.getRemoteDrive().getServiceNiceName()));
 		if (res == JOptionPane.YES_OPTION) {
 			DelMethodWorker dmw = new DelMethodWorker(this.fileToDelete);
 			dmw.execute();

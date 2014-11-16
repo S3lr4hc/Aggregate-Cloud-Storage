@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.Enumeration;
@@ -270,7 +271,13 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				}*/
 				//RemoteFolder folder = node.getFolder();
 				
-				UploadFileDialog ufd = new UploadFileDialog(remoteDrives/*, folder*/);
+				UploadFileDialog ufd = null;
+				try {
+					ufd = new UploadFileDialog(remoteDrives/*, folder*/);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				ufd.setVisible(true);
 			}
 		});
@@ -530,16 +537,11 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		List<RemoteDrive> drives = getDriveStore().getAllDrives();
 		
 		for(RemoteDrive drive: drives) {
-			System.out.println(drive.getTotalSize());
-			System.out.println(drive.getUsedSize());
-			System.out.println();
 			MainWindow.totalSize += drive.getTotalSize();
 			MainWindow.usedSize += drive.getUsedSize();
 		}
-		System.out.println(usedSize + "/" + totalSize);
 		double overAll = (usedSize/totalSize) * 100;
     	overAll = Math.ceil(overAll);
-    	System.out.println("Overall: " + overAll);
 		MainWindow.this.statusBar.setValue((int)overAll);
 	}
 	

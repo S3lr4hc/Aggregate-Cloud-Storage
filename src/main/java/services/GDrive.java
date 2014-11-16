@@ -295,6 +295,7 @@ public class GDrive implements RemoteDrive {
 			mimeTypes2.put("application/arj", "arj");
 			mimeTypes2.put("application/cab", "cab");
 	        mimeTypes2.put("text/html", "html");
+	        mimeTypes2.put("application/x-zip", "");
 			
 			com.google.api.services.drive.model.File file = null;
 			try {
@@ -308,7 +309,8 @@ public class GDrive implements RemoteDrive {
 			
 			String downloadUrl = "";
 			String mimeType = "";
-			String mimeType2 = "";
+			String mimeType2 = " ";
+			boolean visited = false;
 			
 			if (file.getDownloadUrl() == null){
 				mimeType = file.getMimeType();
@@ -318,6 +320,7 @@ public class GDrive implements RemoteDrive {
 			}
 			else {
 				if(file.getFileExtension().isEmpty()) {
+					visited = true;
 					mimeType = file.getMimeType();
 					mimeType2 = mimeTypes2.get(mimeType);
 				}

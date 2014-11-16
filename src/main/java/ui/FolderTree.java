@@ -82,7 +82,7 @@ public class FolderTree extends JTree
 		{
 			super(folder.getParent() == null ? String.format("%s's %s", 
 					folder.getRemoteDrive().getUsername(), folder.getRemoteDrive().getServiceNiceName())
-					: folder.getName());
+					: folder.getName() + " [" + folder.getRemoteDrive().getServiceNiceName() + "]");
 			
 			this.folder = folder;
 		}

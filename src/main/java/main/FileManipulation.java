@@ -17,15 +17,21 @@ import java.nio.ByteBuffer;
  */
 public class FileManipulation {
 	
+	public static void main(String[] args) throws IOException {
+		//splitFile("test", 5 * 1024);
+		//deleteAll("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
+		//join("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
+	}
+	
 	public void splitFile(String filename, long splitSize) throws IOException {
 		
 		int bufferSize = (int) (2 * splitSize);
 		
 		// String source = args[0];
-		String source = "/C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx";
+		String source = filename;
 
 		// String output = args[1];
-		String output = "/C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx";
+		String output = filename;
 
 		FileChannel sourceChannel = null;
 		try {
@@ -116,7 +122,7 @@ public class FileManipulation {
 		}
 		
 	}
-	public static void join(String baseFilename) throws IOException {
+	public void join(String baseFilename) throws IOException {
 		
 		int numberParts = getNumberParts(baseFilename);
 
@@ -132,7 +138,30 @@ public class FileManipulation {
 		}
 		out.close();
 	}
-	private static int getNumberParts(String baseFilename) throws IOException {
+	public void deleteAll(String baseFilename) throws IOException {
+		int numberParts = getNumberParts(baseFilename);
+		
+		for(int part = 1; part <= numberParts; part++) {
+			File file = new File(baseFilename + "." + part);
+			
+			if(file.delete()) {
+				System.out.println(file.getName() + " is deleted!");
+			} else {
+				System.out.println(baseFilename + "." + part);
+				System.out.println("Delete operation is failed.");
+			}
+		}
+	}
+	public void deleteFile(String baseFilename) throws IOException {
+		File file = new File(baseFilename);
+		
+		if(file.delete()) {
+			System.out.println(file.getName() + " is deleted!");
+		} else {
+			System.out.println("Delete operation is failed.");
+		}
+	}
+	public int getNumberParts(String baseFilename) throws IOException {
 		
 		// list all files in the same directory
 		File directory = new File(baseFilename).getAbsoluteFile().getParentFile();
