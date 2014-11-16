@@ -33,8 +33,6 @@ public class DownloadFileDialog extends JPanel {
 	private ArrayList<RemoteFile> fileToDownload;
 	
 	private String filePath;
-	
-	private FileManipulation fileManipulator;
 
 	/**
 	 * Create a dialog to download a file
@@ -45,7 +43,6 @@ public class DownloadFileDialog extends JPanel {
 		super(new BorderLayout());
 		this.fileToDownload = fileToDownload;
 		this.filePath = filePath;
-		this.fileManipulator = new FileManipulation();
 		initDialog();
 	}
 	
