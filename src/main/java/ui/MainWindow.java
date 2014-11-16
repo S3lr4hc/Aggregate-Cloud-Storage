@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -49,8 +52,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+
 import main.DBConnectionFactory;
 import main.DriveStoreEventListener;
+import main.FileManipulation;
 import main.RemoteDrive;
 import main.RemoteDriveFactory;
 import main.RemoteDriveStore;
@@ -136,6 +142,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	private static double usedSize;
 	
 	private String currfilePath;
+	
+	private FileManipulation fileManipulator;
 	/**
 	 * Create a MainWindow to display a list of RemoteDrives
 	 * @param driveStore The RemoteDrives to display
@@ -148,6 +156,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.remoteDrives = driveStore;
 		this.userAccount = userAccount;
 		this.currfilePath = System.getProperty("user.home");
+		this.fileManipulator = new FileManipulation();
 		
 		// Set defaults
 		this.setTitle("Fusein");
@@ -289,9 +298,47 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			@Override
 			public void actionPerformed(ActionEvent event)
 			{
-				RemoteFile fileOwner = ((RemoteFile)fileList.getSelectedValue());
-				DownloadFileDialog dfd = new DownloadFileDialog(fileOwner, currfilePath);
+				ArrayList<RemoteFile> fileOwner = new ArrayList<RemoteFile>();
+				fileOwner.add(((RemoteFile)fileList.getSelectedValue()));
+				String mainFile = fileList.getSelectedValue().getName();
+				int curr = mainFile.lastIndexOf(".");
+			    if(curr <= 0){
+			    	//do nothing
+			    } else {
+			    	mainFile = mainFile.substring(0, curr);
+			    }
+				for(int i = 0; i < fileListModel.getSize(); i++) {
+					RemoteFile file = fileListModel.get(i);
+					String comparedFile = file.getName();
+				    int p = comparedFile.lastIndexOf(".");
+				    if(p <= 0){
+				    	//do nothing
+				    } else {
+				    	comparedFile = comparedFile.substring(0, p);
+				    }
+				    if(mainFile.equals(comparedFile)) {
+				    	if(!fileList.getSelectedValue().getName().equals(file.getName()))
+				    		fileOwner.add(file);
+				    }
+				}
+				DownloadFileDialog dfd = null;
+				try {
+					dfd = new DownloadFileDialog(fileOwner, currfilePath);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				dfd.setVisible(true);
+				String location = dfd.getFilePath();
+				if(fileOwner.size() > 1) {
+					try {
+						fileManipulator.join(location + "\\" + mainFile);
+						fileManipulator.deleteAll(location + "\\" + mainFile);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		});
 		cmdDownload.setEnabled(false);
