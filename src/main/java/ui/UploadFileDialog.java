@@ -94,8 +94,8 @@ public class UploadFileDialog extends JPanel {
 		}
 		double slicePercentage = mainDriveSize/overallSize;
 		BigDecimal bd = new BigDecimal(slicePercentage);
-		bd = bd.setScale(2, BigDecimal.ROUND_DOWN); // setScale is immutable
-		slicePercentage = bd.doubleValue();
+		/*bd = bd.setScale(2, BigDecimal.ROUND_DOWN); // setScale is immutable
+		slicePercentage = bd.doubleValue();*/
 		JList<String> list = new JList<String>(serviceNames);
 		// Default to first item.
 		list.setSelectedIndex(0);
