@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import main.AccountSettings;
 import main.RemoteDrive;
 import main.RemoteDriveStore;
 
@@ -37,12 +38,14 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
 	 */
 	private double usedSize;
 	
+	private AccountSettings acctSettings;
+	
     /**
      * Creates new form AddFileExclusionsView
      */
     public AddFileExclusionsView(RemoteDriveStore remoteDrives) {
     	this.remoteDrives = remoteDrives;
-    	
+    	acctSettings = new AccountSettings();
         initComponents();
     }
 
@@ -77,17 +80,30 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
                 jCheckBox1ActionPerformed(evt);
             }
         });
-
+        if(acctSettings.isDocsChecked())
+        	jCheckBox1.setSelected(true);
         jCheckBox2.setText("Google Presentations");
-
+        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox2ActionPerformed(evt);
+            }
+        });
+        if(acctSettings.isPresentationChecked())
+        	jCheckBox2.setSelected(true);
         jCheckBox3.setText("Google Spreadsheets");
-
+        jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox3ActionPerformed(evt);
+            }
+        });
+        if(acctSettings.isSpreadsheetChecked())
+        	jCheckBox3.setSelected(true);
         jButton1.setText("Custom Exclusions");
 
         jLabel1.setText("Storage Space in Use");
 
         CustomExclusionList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = acctSettings.getRestrictedTypes();
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -166,8 +182,18 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
     
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
+    	
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
+    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+    	
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    
+    private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+    	
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -196,11 +222,11 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         //</editor-fold>
 
         /* Create and display the form */
-        /*java.awt.EventQueue.invokeLater(new Runnable() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddFileExclusionsView().setVisible(true);
+                new AddFileExclusionsView(new RemoteDriveStore()).setVisible(true);
             }
-        });*/
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

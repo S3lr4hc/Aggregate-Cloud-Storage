@@ -86,7 +86,7 @@ public class UploadFileDialog extends JPanel {
 				largestGoogleDrive = serviceData.get(i);
 				largestGoogleDriveSpace = availableSpace;
 			}
-			if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
+			else if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
 				largestDropbox = serviceData.get(i);
 				largestDropboxSpace = availableSpace;
 			}
@@ -124,10 +124,34 @@ public class UploadFileDialog extends JPanel {
 			for (int part = 1; part <= numberParts; part++) {
 				File filetoUL = new File(file.getAbsoluteFile() + "." + part);
 				
-				if(part <= divideSplits) {
-					umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+				if(largestGoogleDriveSpace > largestDropboxSpace) {
+					if(part <= divideSplits) {
+						umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+					} else {
+						umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+					}
 				} else {
-					umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+					if(part <= divideSplits) {
+						umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+					} else {
+						umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+					}
+				}
+				if(numberParts > 2) {
+					largestGoogleDriveSpace = largestGoogleDrive.getTotalSize() - largestGoogleDrive.getUsedSize();
+					largestDropboxSpace = largestDropbox.getTotalSize() - largestDropbox.getUsedSize();
+					for(int i = 0; i < serviceData.size(); i++) {
+						RemoteDrive service = serviceData.get(i);
+						double availableSpace = service.getTotalSize() - service.getUsedSize();
+						if(service.getServiceNiceName().equals("Google Drive") && availableSpace > largestGoogleDriveSpace) {
+							largestGoogleDrive = serviceData.get(i);
+							largestGoogleDriveSpace = availableSpace;
+						}
+						else if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
+							largestDropbox = serviceData.get(i);
+							largestDropboxSpace = availableSpace;
+						}
+					}
 				}
 				umw.execute();
 				filetoUL = null;
