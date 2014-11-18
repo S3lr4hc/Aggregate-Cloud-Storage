@@ -43,9 +43,9 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
     /**
      * Creates new form AddFileExclusionsView
      */
-    public AddFileExclusionsView(RemoteDriveStore remoteDrives) {
+    public AddFileExclusionsView(RemoteDriveStore remoteDrives, AccountSettings acctSettings) {
     	this.remoteDrives = remoteDrives;
-    	acctSettings = new AccountSettings();
+    	this.acctSettings = acctSettings;
         initComponents();
     }
 
@@ -224,7 +224,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddFileExclusionsView(new RemoteDriveStore()).setVisible(true);
+                new AddFileExclusionsView(new RemoteDriveStore(), new AccountSettings()).setVisible(true);
             }
         });
     }

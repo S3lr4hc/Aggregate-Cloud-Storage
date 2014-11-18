@@ -54,6 +54,7 @@ import javax.swing.tree.TreePath;
 
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
+import main.AccountSettings;
 import main.DBConnectionFactory;
 import main.DriveStoreEventListener;
 import main.FileManipulation;
@@ -144,6 +145,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	private String currfilePath;
 	
 	private FileManipulation fileManipulator;
+	
+	private AccountSettings acctSettings;
 	/**
 	 * Create a MainWindow to display a list of RemoteDrives
 	 * @param driveStore The RemoteDrives to display
@@ -157,6 +160,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.userAccount = userAccount;
 		this.currfilePath = System.getProperty("user.home");
 		this.fileManipulator = new FileManipulation();
+		this.acctSettings = new AccountSettings();
 		
 		// Set defaults
 		this.setTitle("Fusein");
@@ -204,7 +208,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView(remoteDrives);
+				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView(remoteDrives, acctSettings);
 				fileExclusionsView.setVisible(true);
 			}
 		});
@@ -282,7 +286,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				
 				UploadFileDialog ufd = null;
 				try {
-					ufd = new UploadFileDialog(remoteDrives/*, folder*/);
+					ufd = new UploadFileDialog(remoteDrives, acctSettings/*, folder*/);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

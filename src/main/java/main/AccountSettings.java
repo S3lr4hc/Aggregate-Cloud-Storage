@@ -3,8 +3,11 @@ package main;
 import java.util.HashMap;
 
 public class AccountSettings {
-	private boolean docsChecked = true;
-	private boolean presentationChecked = false;
+	//docx, odt, rtf
+	private boolean docsChecked = false;
+	//xlsx, ods, csv, tsv
+	private boolean presentationChecked = true;
+	//pptx, ppt
 	private boolean spreadsheetChecked = true;
 	private String[] restrictedTypes = {".mp4", ".mp3", ".jpg"};
 	

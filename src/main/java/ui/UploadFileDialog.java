@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import main.AccountSettings;
 import main.RemoteDrive;
 import main.RemoteDriveStore;
 import main.RemoteFolder;
@@ -44,15 +45,17 @@ public class UploadFileDialog extends JPanel {
 	 */
 	private RemoteFolder folder;
 
+	private AccountSettings acctSettings;
 	/**
 	 * Create a dialog for uploading a file for a list of RemoteDrives
 	 * @param remoteDrives The current list of RemoteDrives
 	 * @throws IOException 
 	 */
-	public UploadFileDialog(RemoteDriveStore remoteDrives) throws IOException {
+	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings) throws IOException {
 		super(new BorderLayout());
 		
 		this.remoteDrives = remoteDrives;
+		this.acctSettings = acctSettings;
 		//this.folder = folder;
 		
 		initUploadFile();
@@ -75,6 +78,9 @@ public class UploadFileDialog extends JPanel {
 		RemoteDrive largestDropbox = null;
 		double largestGoogleDriveSpace = 0;
 		double largestDropboxSpace = 0;
+		double smallestDropboxSpace = 0;
+		int dropboxCount = 0;
+		int googleCount = 0;
 		final String[] serviceNames = new String[serviceData.size()];
 		for (int i = 0; i < serviceData.size(); i++) {
 			RemoteDrive service = serviceData.get(i);
@@ -85,20 +91,27 @@ public class UploadFileDialog extends JPanel {
 			if(service.getServiceNiceName().equals("Google Drive") && availableSpace > largestGoogleDriveSpace) {
 				largestGoogleDrive = serviceData.get(i);
 				largestGoogleDriveSpace = availableSpace;
+				googleCount++;
 			}
 			else if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
 				largestDropbox = serviceData.get(i);
 				largestDropboxSpace = availableSpace;
+				dropboxCount++;
+				smallestDropboxSpace = largestDropboxSpace;
+			}
+			if(dropboxCount > 1) {
+				if(smallestDropboxSpace > availableSpace) {
+					smallestDropboxSpace = availableSpace;
+				}
 			}
 			overallSize += availableSpace;
 		}
-		double slicePercentage = mainDriveSize/overallSize;
-		BigDecimal bd = new BigDecimal(slicePercentage);
-		/*bd = bd.setScale(2, BigDecimal.ROUND_DOWN); // setScale is immutable
-		slicePercentage = bd.doubleValue();*/
+		/*BigDecimal bd = new BigDecimal(slicePercentage);
+		bd = bd.setScale(2, BigDecimal.ROUND_DOWN); // setScale is immutable
+		slicePercentage = bd.doubleValue();
 		JList<String> list = new JList<String>(serviceNames);
 		// Default to first item.
-		list.setSelectedIndex(0);
+		list.setSelectedIndex(0);*/
 
 		/*JLabel title = new JLabel("Upload to:");
 		title.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
@@ -115,7 +128,9 @@ public class UploadFileDialog extends JPanel {
 		// If the user selects a file to upload...
 		if (choice == JFileChooser.APPROVE_OPTION) {
 			final File file = chooseUploadFile.getSelectedFile();
-			String serv = list.getSelectedValue();
+			if(file.length() > largestDropboxSpace + largestGoogleDriveSpace && dropboxCount > 1)
+				mainDriveSize = smallestDropboxSpace;
+			double slicePercentage = mainDriveSize/overallSize;
 			// Now we need to determine the service to upload to.
 			fileManipulator.splitFile(file.getAbsolutePath(), (long) (file.length() * slicePercentage));
 			int numberParts = fileManipulator.getNumberParts(file.getAbsolutePath());
@@ -128,13 +143,17 @@ public class UploadFileDialog extends JPanel {
 					if(part <= divideSplits) {
 						umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
 					} else {
-						umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+						if(filetoUL.length() > largestDropboxSpace)
+							umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+						else umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
 					}
 				} else {
 					if(part <= divideSplits) {
 						umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
 					} else {
-						umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+						if(filetoUL.length() > largestGoogleDriveSpace)
+							umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+						else umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
 					}
 				}
 				if(numberParts > 2) {
