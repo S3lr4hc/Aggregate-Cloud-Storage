@@ -315,8 +315,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			    } else {
 			    	mainFile2 = mainFile2.substring(0, curr);
 			    }
-				for(int i = 0; i < fileListModel.getSize(); i++) {
-					RemoteFile file = fileListModel.get(i);
+				for(int i = 0; i < completeFileListModel.getSize(); i++) {
+					RemoteFile file = completeFileListModel.get(i);
 					String comparedFile = file.getName();
 					if(comparedFile.startsWith(mainFile2) && comparedFile.substring(mainFile2.length()).matches("^\\.\\d+$")) {
 				    	if(!mainFile.equals(comparedFile)) {
@@ -442,6 +442,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	                List<RemoteDrive> drives = getDriveStore().getAllDrives();
 	                
 	                MainWindow.this.fileListModel.clear();
+	                MainWindow.this.completeFileListModel.clear();
 	                
 	                for(RemoteDrive drive : drives) {
 	                	System.out.println("Reloading "+drive.getUsername()+ "'s " +drive.getServiceNiceName());
@@ -468,7 +469,18 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			    				while (it.hasNext()) {
 			    					RemoteEntry entry = it.next();
 			    					if (entry.isFile()) {
-			    						MainWindow.this.fileListModel.addElement(entry.asFile());
+			    						RemoteEntry currEntry = entry;
+			    						String scurrEntry = currEntry.getName();
+			    						int curr = scurrEntry.lastIndexOf(".");
+			    					    if(curr <= 0){
+			    					    	//do nothing
+			    					    } else {
+			    					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
+			    					    	System.out.println(scurrEntry);
+			    					    }
+			    					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
+			    					    	MainWindow.this.fileListModel.addElement(entry.asFile());
+			    					    MainWindow.this.completeFileListModel.addElement(entry.asFile());
 			    					}
 			    				}
 							}
@@ -509,6 +521,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 						}
 						
 						MainWindow.this.fileListModel.clear();
+						MainWindow.this.completeFileListModel.clear();
 						DefaultTreeModel model = (DefaultTreeModel)MainWindow.this.folderTree.getModel();
 						node.removeAllChildren();
 						
@@ -516,7 +529,18 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 						while (it.hasNext()) {
 							RemoteEntry entry = it.next();
 							if (entry.isFile()) {
-								MainWindow.this.fileListModel.addElement(entry.asFile());
+								RemoteEntry currEntry = entry;
+								String scurrEntry = currEntry.getName();
+								int curr = scurrEntry.lastIndexOf(".");
+							    if(curr <= 0){
+							    	//do nothing
+							    } else {
+							    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
+							    	System.out.println(scurrEntry);
+							    }
+							    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
+							    	MainWindow.this.fileListModel.addElement(entry.asFile());
+							    MainWindow.this.completeFileListModel.addElement(entry.asFile());
 							} else {
 								MainWindow.this.folderTree.addFolder(node, entry.asFolder());
 							}
@@ -673,7 +697,6 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				while (it.hasNext()) {
 					RemoteEntry entry = it.next();
 					if (entry.isFile()) {
-						//TRY TO REMOVE AND PLACE A SINGLE FILE FOR A SPLIT
 						RemoteEntry currEntry = entry;
 						String scurrEntry = currEntry.getName();
 						int curr = scurrEntry.lastIndexOf(".");
@@ -681,29 +704,13 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 					    	//do nothing
 					    } else {
 					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
-					    	System.out.println(scurrEntry);
 					    }
 					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
-					    /*for(int i = 0; i < entries.size(); i++) {
-					    	int limit = 0;
-					    	RemoteEntry comparedEntry = entries.get(i);
-					    	String scomparedEntry = comparedEntry.getName();
-					    	int p = scomparedEntry.lastIndexOf(".");
-						    if(p <= 0){
-						    	//do nothing
-						    } else {
-						    	scomparedEntry = scomparedEntry.substring(0, p);
-						    }
-						    if(scurrEntry.equals(scomparedEntry) && limit < 1) {*/
-						    	MainWindow.this.fileListModel.addElement(entry.asFile());
-						    	/*limit++;
-						    }
-						}*/
+						    MainWindow.this.fileListModel.addElement(entry.asFile());
 						MainWindow.this.completeFileListModel.addElement(entry.asFile());
 					} else {
 						MainWindow.this.folderTree.addFolder(null, entry.asFolder());
 					}
-					System.out.println("CURR SIZE: "+fileListModel.getSize());
 				}
 				
 				//TODO this is kind of a hack
