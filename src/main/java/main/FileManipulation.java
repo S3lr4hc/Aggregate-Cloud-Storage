@@ -163,7 +163,6 @@ public class FileManipulation {
 		}
 	}
 	public int getNumberParts(String baseFilename) throws IOException {
-		
 		// list all files in the same directory
 		File directory = new File(baseFilename).getAbsoluteFile().getParentFile();
 		final String justFilename = new File(baseFilename).getName();
