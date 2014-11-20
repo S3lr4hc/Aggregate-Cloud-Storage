@@ -476,7 +476,6 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			    					    	//do nothing
 			    					    } else {
 			    					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
-			    					    	System.out.println(scurrEntry);
 			    					    }
 			    					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
 			    					    	MainWindow.this.fileListModel.addElement(entry.asFile());
