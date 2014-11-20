@@ -162,7 +162,7 @@ public class FileManipulation {
 			System.out.println("Delete operation is failed.");
 		}
 	}
-	public static int getNumberParts(String baseFilename) throws IOException {
+	public int getNumberParts(String baseFilename) throws IOException {
 		
 		// list all files in the same directory
 		File directory = new File(baseFilename).getAbsoluteFile().getParentFile();
