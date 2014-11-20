@@ -18,7 +18,8 @@ import java.nio.ByteBuffer;
 public class FileManipulation {
 	
 	public static void main(String[] args) throws IOException {
-		//splitFile("test", 5 * 1024);
+		//splitFile("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx", 5 * 1024);
+		//System.out.println(getNumberParts("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx"));
 		//deleteAll("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 		//join("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 	}
@@ -161,7 +162,7 @@ public class FileManipulation {
 			System.out.println("Delete operation is failed.");
 		}
 	}
-	public int getNumberParts(String baseFilename) throws IOException {
+	public static int getNumberParts(String baseFilename) throws IOException {
 		
 		// list all files in the same directory
 		File directory = new File(baseFilename).getAbsoluteFile().getParentFile();

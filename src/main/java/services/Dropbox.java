@@ -219,6 +219,7 @@ public class Dropbox implements RemoteDrive {
 			try {
 				outputStream = new FileOutputStream(localPath);
 				// Fully write the file to local system.
+				System.out.println(this.getPath());
 				Dropbox.this.client.getFile(this.getPath(), null, outputStream);
 			} catch (DbxException | IOException e) {
 				e.printStackTrace();

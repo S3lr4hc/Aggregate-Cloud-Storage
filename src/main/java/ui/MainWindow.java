@@ -121,6 +121,9 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	 * A model of RemoteFiles
 	 */
 	private DefaultListModel<RemoteFile> fileListModel;
+	
+	
+	private DefaultListModel<RemoteFile> completeFileListModel;
 
 	/**
 	 * Button used to upload a file to a RemoteDrive
@@ -305,24 +308,20 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				ArrayList<RemoteFile> fileOwner = new ArrayList<RemoteFile>();
 				fileOwner.add(((RemoteFile)fileList.getSelectedValue()));
 				String mainFile = fileList.getSelectedValue().getName();
-				int curr = mainFile.lastIndexOf(".");
+				String mainFile2 = mainFile;
+				int curr = mainFile2.lastIndexOf(".");
 			    if(curr <= 0){
 			    	//do nothing
 			    } else {
-			    	mainFile = mainFile.substring(0, curr);
+			    	mainFile2 = mainFile2.substring(0, curr);
 			    }
 				for(int i = 0; i < fileListModel.getSize(); i++) {
 					RemoteFile file = fileListModel.get(i);
 					String comparedFile = file.getName();
-				    int p = comparedFile.lastIndexOf(".");
-				    if(p <= 0){
-				    	//do nothing
-				    } else {
-				    	comparedFile = comparedFile.substring(0, p);
-				    }
-				    if(mainFile.equals(comparedFile)) {
-				    	if(!fileList.getSelectedValue().getName().equals(file.getName()))
+					if(comparedFile.startsWith(mainFile2) && comparedFile.substring(mainFile2.length()).matches("^\\.\\d+$")) {
+				    	if(!mainFile.equals(comparedFile)) {
 				    		fileOwner.add(file);
+				    	}
 				    }
 				}
 				DownloadFileDialog dfd = null;
@@ -336,8 +335,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				String location = dfd.getFilePath();
 				if(fileOwner.size() > 1) {
 					try {
-						fileManipulator.join(location + "\\" + mainFile);
-						fileManipulator.deleteAll(location + "\\" + mainFile);
+						fileManipulator.join(location + "\\" + mainFile2);
+						fileManipulator.deleteAll(location + "\\" + mainFile2);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -529,6 +528,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			}
 		});
 		
+		this.completeFileListModel = new DefaultListModel<>();
 		this.fileListModel = new DefaultListModel<>();
 		this.fileList = new FileList(this.fileListModel);
 		
@@ -673,10 +673,37 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				while (it.hasNext()) {
 					RemoteEntry entry = it.next();
 					if (entry.isFile()) {
-						MainWindow.this.fileListModel.addElement(entry.asFile());
+						//TRY TO REMOVE AND PLACE A SINGLE FILE FOR A SPLIT
+						RemoteEntry currEntry = entry;
+						String scurrEntry = currEntry.getName();
+						int curr = scurrEntry.lastIndexOf(".");
+					    if(curr <= 0){
+					    	//do nothing
+					    } else {
+					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
+					    	System.out.println(scurrEntry);
+					    }
+					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
+					    /*for(int i = 0; i < entries.size(); i++) {
+					    	int limit = 0;
+					    	RemoteEntry comparedEntry = entries.get(i);
+					    	String scomparedEntry = comparedEntry.getName();
+					    	int p = scomparedEntry.lastIndexOf(".");
+						    if(p <= 0){
+						    	//do nothing
+						    } else {
+						    	scomparedEntry = scomparedEntry.substring(0, p);
+						    }
+						    if(scurrEntry.equals(scomparedEntry) && limit < 1) {*/
+						    	MainWindow.this.fileListModel.addElement(entry.asFile());
+						    	/*limit++;
+						    }
+						}*/
+						MainWindow.this.completeFileListModel.addElement(entry.asFile());
 					} else {
 						MainWindow.this.folderTree.addFolder(null, entry.asFolder());
 					}
+					System.out.println("CURR SIZE: "+fileListModel.getSize());
 				}
 				
 				//TODO this is kind of a hack

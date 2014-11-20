@@ -64,6 +64,7 @@ public class FileList extends JList<RemoteFile>
 		 */
 		ImageIcon iconDropbox;
 		ImageIcon iconGDrive;
+		ImageIcon iconSplit;
 		
 		/**
 		 * Create a FileCellRenderer
@@ -74,17 +75,33 @@ public class FileList extends JList<RemoteFile>
 			
 			this.iconDropbox = new ImageIcon(ClassLoader.getSystemResource("service_icons/dropbox.png"));
 			this.iconGDrive = new ImageIcon(ClassLoader.getSystemResource("service_icons/gdrive.png"));
+			this.iconSplit = new ImageIcon(ClassLoader.getSystemResource("service_icons/split.png"));
 		}
 
 		@Override
 		public Component getListCellRendererComponent(
 				JList<? extends RemoteFile> list, RemoteFile file,
 				int index, boolean isSelected, boolean hasFocus) {
-			this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName());
-			if(file.getRemoteDrive().getServiceNiceName().equals("Dropbox"))
-			this.setIcon(this.iconDropbox);
-			else this.setIcon(this.iconGDrive);
-			
+			String mainFile = file.getName();
+			String mainFileExtension = "";
+			int curr = mainFile.lastIndexOf(".");
+		    if(curr <= 0){
+		    	//do nothing
+		    } else {
+		    	mainFileExtension = mainFile.substring(curr, mainFile.length());
+		    	mainFile = mainFile.substring(0, curr);
+		    }
+		    if(mainFileExtension.equals(".1")) {
+		    	this.setText(mainFile + " Split File");
+		    	this.setIcon(this.iconSplit);
+		    }
+		    else {
+		    	this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName());
+		    	if(file.getRemoteDrive().getServiceNiceName().equals("Dropbox"))
+		    		this.setIcon(this.iconDropbox);
+		    	else this.setIcon(this.iconGDrive);
+		    }
+		    
 			Color background = Color.WHITE;
 			
 			if (isSelected) {
