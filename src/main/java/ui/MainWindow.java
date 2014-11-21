@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -352,13 +353,41 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			@Override
 			public void actionPerformed(ActionEvent event)
 			{
-				RemoteFile fileOwner = ((RemoteFile) fileList.getSelectedValue());
-				DeleteFileDialog dfd = new DeleteFileDialog(fileOwner, fileListModel);
+				ArrayList<RemoteFile> fileOwner = new ArrayList<RemoteFile>();
+				fileOwner.add(((RemoteFile) fileList.getSelectedValue()));
+				String mainFile = fileList.getSelectedValue().getName();
+				String mainFile2 = mainFile;
+				int curr = mainFile2.lastIndexOf(".");
+			    if(curr <= 0){
+			    	//do nothing
+			    } else {
+			    	mainFile2 = mainFile2.substring(0, curr);
+			    }
+				for(int i = 0; i < completeFileListModel.getSize(); i++) {
+					RemoteFile file = completeFileListModel.get(i);
+					String comparedFile = file.getName();
+					if(comparedFile.startsWith(mainFile2) && comparedFile.substring(mainFile2.length()).matches("^\\.\\d+$")) {
+				    	if(!mainFile.equals(comparedFile)) {
+				    		fileOwner.add(file);
+				    	}
+				    }
+				}
+				DeleteFileDialog dfd = new DeleteFileDialog(fileOwner, fileListModel, completeFileListModel);
 				dfd.setVisible(true);
 			}
 		});
 		cmdDelete.setEnabled(false);
 		this.toolBar.add(cmdDelete);
+		
+		final JButton cmdShare = new JButton("Share");
+		cmdShare.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		cmdShare.setEnabled(false);
+		this.toolBar.add(cmdShare);
 		
 		JButton cmdAddService = new JButton("Add Service");
 		cmdAddService.addActionListener(new ActionListener() {
@@ -392,6 +421,16 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			}
 		});
 		this.toolBar.add(cmdRefresh);
+		
+		JTextField searchField = new JTextField();
+		searchField.setText("Search");
+		searchField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		this.toolBar.add(searchField);
 		
 		this.add(this.toolBar, BorderLayout.PAGE_START);
 		
@@ -563,10 +602,18 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 					cmdDelete.setEnabled(false);
 					cmdDownload.setEnabled(false);
 					cmdOpen.setEnabled(false);
+					cmdShare.setEnabled(false);
 				} else {
+					String filename = fileList.getSelectedValue().getName();
+					int curr = filename.lastIndexOf(".");
+					if(curr > 0)
+						filename = filename.substring(curr, filename.length());
 					cmdDelete.setEnabled(true);
 					cmdDownload.setEnabled(true);
-					cmdOpen.setEnabled(true);
+					if(!filename.equals(".1"))
+						cmdOpen.setEnabled(true);
+					else cmdOpen.setEnabled(false);
+					cmdShare.setEnabled(true);
 				}
 			}
 		});

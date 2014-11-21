@@ -2,6 +2,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
@@ -22,21 +23,24 @@ public class DeleteFileDialog extends JPanel {
 	/**
 	 * The RemoteFile that owns the file to be deleted
 	 */
-	private RemoteFile fileToDelete;
+	private ArrayList<RemoteFile> fileToDelete;
 	
 	/**
 	 * The model of the file listing on the main window.
 	 */
 	private DefaultListModel<RemoteFile> model;
 	
+	private DefaultListModel<RemoteFile> completeModel;
+	
 	/**
 	 * Create a dialog for RemoteFile deletion
 	 * @param fileOwner The RemoteFile to be deleted
 	 */
-	public DeleteFileDialog(RemoteFile fileToDelete, DefaultListModel<RemoteFile> model) {
+	public DeleteFileDialog(ArrayList<RemoteFile> fileToDelete, DefaultListModel<RemoteFile> model, DefaultListModel<RemoteFile> completeModel) {
 		super(new BorderLayout());
 		this.fileToDelete = fileToDelete;
 		this.model = model;
+		this.completeModel = completeModel;
 		initDialog();
 	}
 
@@ -44,12 +48,19 @@ public class DeleteFileDialog extends JPanel {
 	 * Display the delete file dialog and execute the action
 	 */
 	private void initDialog() {
+		String singleFilename = this.fileToDelete.get(0).getName();
+		int fileExtPos = singleFilename.lastIndexOf(".");
+		if (fileExtPos >= 0 )
+			singleFilename= singleFilename.substring(0, fileExtPos);
 		int res = JOptionPane.showConfirmDialog(this,
-				String.format("Are you sure you want to delete the file \"%s\" from your %s account?",
-						      this.fileToDelete.getName(), this.fileToDelete.getRemoteDrive().getServiceNiceName()));
+				String.format("Are you sure you want to delete the file \"%s\" from your account?",
+						      singleFilename));
 		if (res == JOptionPane.YES_OPTION) {
-			DelMethodWorker dmw = new DelMethodWorker(this.fileToDelete);
-			dmw.execute();
+			DelMethodWorker dmw = null;
+			for(int i = 0; i < fileToDelete.size(); i++) {
+				dmw = new DelMethodWorker(this.fileToDelete.get(i));
+				dmw.execute();
+			}
 			boolean succ;
 			int delResult;
 			
@@ -60,7 +71,12 @@ public class DeleteFileDialog extends JPanel {
 					// I think this should be done by callback, but I
 					// can't get it to work so I've passed in the
 					// model to this dialog... -Cam
-					model.removeElement(fileToDelete);
+					model.removeElement(fileToDelete.get(0));
+					
+					if(fileToDelete.size() > 1) {
+						for(int i = 1; i < fileToDelete.size(); i++)
+							completeModel.removeElement(fileToDelete.get(i));
+					}
 					
 					delResult = JOptionPane.showConfirmDialog(this,
 							"File had been deleted.", "Delete file success",
