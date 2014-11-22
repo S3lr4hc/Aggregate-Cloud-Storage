@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -24,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -422,12 +425,20 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		});
 		this.toolBar.add(cmdRefresh);
 		
-		JTextField searchField = new JTextField();
-		searchField.setText("Search");
+		final JTextField searchField = new JTextField("Search");
+		searchField.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) { }
+			@Override
+			public void focusGained(FocusEvent e) {
+				searchField.selectAll();
+			}
+		});
 		searchField.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				String searchValue = searchField.getText();
+				searchList(searchValue);
 			}
 		});
 		this.toolBar.add(searchField);
@@ -650,6 +661,16 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				getOverallDriveSize();
 			}
 		});
+	}
+	
+	public void searchList(String searchValue) {
+		for(int i = 0; i < fileListModel.size(); i++) {
+			System.out.println(fileListModel.get(i).getName() + " " + i);
+			if(!Pattern.compile(Pattern.quote(searchValue), Pattern.CASE_INSENSITIVE).matcher(fileListModel.get(i).getName()).find()/*fileListModel.get(i).getName().contains(searchValue)*/) {
+				fileListModel.remove(i);
+				i--;
+			}
+		}
 	}
 	
 	public void getOverallDriveSize() {
