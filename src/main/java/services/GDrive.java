@@ -295,6 +295,7 @@ public class GDrive implements RemoteDrive {
 			mimeTypes2.put("application/arj", "arj");
 			mimeTypes2.put("application/cab", "cab");
 	        mimeTypes2.put("text/html", "html");
+	        mimeTypes2.put("application/octet-stream", "");
 	        mimeTypes2.put("application/x-zip", "");
 			
 			com.google.api.services.drive.model.File file = null;
@@ -528,11 +529,14 @@ public class GDrive implements RemoteDrive {
 				e1.printStackTrace();
 				return null;
 			}
-
+			if(localPath.matches("^.+\\d+$")) {
+				mimeType = "application/x-zip";
+			}
 			// File's metadata.
 			com.google.api.services.drive.model.File body = new com.google.api.services.drive.model.File();
 			body.setTitle(inputFile.getName());
 			body.setDescription("Uploaded from fusein");
+			System.out.println("MIME TYPE : "+mimeType);
 			body.setMimeType(mimeType);
 
 			// Set the parent folder.

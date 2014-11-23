@@ -6,6 +6,8 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -38,9 +40,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -68,6 +72,7 @@ import main.RemoteDriveStore;
 import main.RemoteEntry;
 import main.RemoteFile;
 import main.RemoteFolder;
+import main.ShareFile;
 import ui.FolderTree.FolderTreeNode;
 
 /**
@@ -386,7 +391,77 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		cmdShare.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				ShareFile sending = new ShareFile();
+				ArrayList<RemoteFile> fileOwner = new ArrayList<RemoteFile>();
+				fileOwner.add(((RemoteFile) fileList.getSelectedValue()));
+				String mainFile = fileList.getSelectedValue().getName();
+				String mainFile2 = mainFile;
+				int curr = mainFile2.lastIndexOf(".");
+			    if(curr <= 0){
+			    	//do nothing
+			    } else {
+			    	mainFile2 = mainFile2.substring(0, curr);
+			    }
+				for(int i = 0; i < completeFileListModel.getSize(); i++) {
+					RemoteFile file = completeFileListModel.get(i);
+					String comparedFile = file.getName();
+					if(comparedFile.startsWith(mainFile2) && comparedFile.substring(mainFile2.length()).matches("^\\.\\d+$")) {
+				    	if(!mainFile.equals(comparedFile)) {
+				    		fileOwner.add(file);
+				    	}
+				    }
+				}
+				JTextField emailField = new JTextField();
+				JPasswordField passwordField = new JPasswordField();
+				JTextField recipientField = new JTextField();
+				Object[] fields = {
+						"E-mail", emailField,
+						"Password", passwordField,
+						"Recipient", recipientField
+						};
+				int result = JOptionPane.showConfirmDialog(null, fields, "Share File", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				if(result == JOptionPane.OK_OPTION) {
+					DownloadFileDialog dfd = null;
+					try {
+						dfd = new DownloadFileDialog(fileOwner, currfilePath);
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					dfd.setVisible(true);
+					String location = dfd.getFilePath();
+					if(fileOwner.size() > 1) {
+						try {
+							fileManipulator.join(location + "\\" + mainFile2);
+							fileManipulator.deleteAll(location + "\\" + mainFile2);
+						} catch (IOException e3) {
+							// TODO Auto-generated catch block
+							e3.printStackTrace();
+						}
+					}
+					if(fileOwner.size() > 1)
+						sending.sendMail(emailField.getText(), new String(passwordField.getPassword()), recipientField.getText(), currfilePath + "\\" + mainFile2);
+					else  {
+						if(!mainFile.contains(".")) {
+							File file = new File(currfilePath);
+							File[] listofFiles = file.listFiles();
+							for(File currFile:listofFiles) {
+								if(currFile.getName().contains(mainFile)) {
+									mainFile = currFile.getName();
+								}
+							}
+						}
+						sending.sendMail(emailField.getText(), new String(passwordField.getPassword()), recipientField.getText(), currfilePath + "\\" + mainFile);
+					}
+					try {
+						if(fileOwner.size() > 1)
+							fileManipulator.deleteFile(currfilePath + "\\" + mainFile2);
+						else fileManipulator.deleteFile(currfilePath + "\\" + mainFile);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 			}
 		});
 		cmdShare.setEnabled(false);
