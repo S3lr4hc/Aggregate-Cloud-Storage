@@ -140,6 +140,11 @@ public class UploadFileDialog extends JPanel {
 				restrict = true;
 			else if((fileExtension.equals(".pptx") || fileExtension.equals(".ppt") || fileExtension.equals(".pps")) && acctSettings.isPresentationChecked())
 				restrict = true;
+			//for loop for custom types
+			for(String curr:acctSettings.getRestrictedTypes()) {
+				if(fileExtension.equals(curr))
+					restrict = true;
+			}
 			UploadMethodWorker umw = null;
 			if(!restrict) {
 				if(file.length() > largestDropboxSpace + largestGoogleDriveSpace && dropboxCount > 1)

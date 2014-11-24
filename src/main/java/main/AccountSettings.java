@@ -1,5 +1,6 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AccountSettings {
@@ -9,8 +10,13 @@ public class AccountSettings {
 	private boolean presentationChecked = true;
 	//pptx, ppt, pps
 	private boolean spreadsheetChecked = true;
-	private String[] restrictedTypes = {".mp4", ".mp3", ".jpg"};
+	private ArrayList<String> restrictedTypes = new ArrayList<String>();
 	
+	public AccountSettings() {
+		restrictedTypes.add(".mp4");
+		restrictedTypes.add(".mp3");
+		restrictedTypes.add(".jpg");
+	}
 	public boolean isDocsChecked() {
 		return docsChecked;
 	}
@@ -29,10 +35,10 @@ public class AccountSettings {
 	public void setSpreadsheetChecked(boolean spreadsheetChecked) {
 		this.spreadsheetChecked = spreadsheetChecked;
 	}
-	public String[] getRestrictedTypes() {
+	public ArrayList<String> getRestrictedTypes() {
 		return restrictedTypes;
 	}
-	public void setRestrictedTypes(String[] restrictedTypes) {
+	public void setRestrictedTypes(ArrayList<String> restrictedTypes) {
 		this.restrictedTypes = restrictedTypes;
 	}
 }

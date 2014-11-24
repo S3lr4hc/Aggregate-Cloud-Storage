@@ -8,9 +8,11 @@ package ui;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import main.AccountSettings;
@@ -108,9 +110,9 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         jLabel1.setText("Storage Space in Use");
 
         CustomExclusionList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = acctSettings.getRestrictedTypes();
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+            ArrayList<String> strings = acctSettings.getRestrictedTypes();
+            public int getSize() { return strings.size(); }
+            public Object getElementAt(int i) { return strings.get(i); }
         });
         jScrollPane1.setViewportView(CustomExclusionList);
 
@@ -210,7 +212,13 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
     }//GEN-LAST:event_jCheckBox1ActionPerformed
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	JFrame frame = new JFrame("Custom File Types");
     	
+    	String extension = JOptionPane.showInputDialog(frame, "Restrict a Type?");
+    	
+    	acctSettings.getRestrictedTypes().add(extension);
+    	
+    	CustomExclusionList.updateUI();
     }
     
     /**
