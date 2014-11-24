@@ -99,7 +99,12 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         if(acctSettings.isSpreadsheetChecked())
         	jCheckBox3.setSelected(true);
         jButton1.setText("Custom Exclusions");
-
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        
         jLabel1.setText("Storage Space in Use");
 
         CustomExclusionList.setModel(new javax.swing.AbstractListModel() {
@@ -181,19 +186,33 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
 	}
     
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    	
+        boolean document = acctSettings.isDocsChecked();
+        if(document)
+        	document = false;
+        else document = true;
+        acctSettings.setDocsChecked(document);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    	
+        boolean presentation = acctSettings.isPresentationChecked();
+        if(presentation)
+        	presentation = false;
+        else presentation = true;
+        acctSettings.setPresentationChecked(presentation);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
     
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    	
+        boolean spreadsheet = acctSettings.isSpreadsheetChecked();
+        if(spreadsheet)
+        	spreadsheet = false;
+        else spreadsheet = true;
+        acctSettings.setSpreadsheetChecked(spreadsheet);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    	
+    }
+    
     /**
      * @param args the command line arguments
      */
