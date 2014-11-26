@@ -96,7 +96,6 @@ public class LoginWindow extends JFrame implements WindowListener{
         	@Override
         	public void actionPerformed(ActionEvent e) {
         		String sql = "SELECT * from UserAccount where username = ? and password = ?";
-        		
         		try {
 					stmt = (PreparedStatement) conn.prepareStatement(sql);
 					stmt.setString(1, usernameField.getText());
@@ -106,6 +105,17 @@ public class LoginWindow extends JFrame implements WindowListener{
 					if(rs.next()) {
 						JOptionPane.showMessageDialog(null, "Correct!");
 						userAccount = rs.getString("username");
+						final JFrame mainWindow = new MainWindow(driveStore, userAccount);
+						LoginWindow.this.dispose();
+		        		
+		        		SwingUtilities.invokeLater(new Runnable() {
+		        			public void run()
+		        			{
+		        				mainWindow.setVisible(true);
+		        			}
+		        		});
+		        		
+		        		driveStore.loadFromFile("conf.properties");
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Error!");
@@ -113,15 +123,6 @@ public class LoginWindow extends JFrame implements WindowListener{
 				} catch (SQLException e2) {
 					JOptionPane.showMessageDialog(null, e2);
 				}
-        		LoginWindow.this.dispose();
-        		final JFrame mainWindow = new MainWindow(driveStore, userAccount);
-        		SwingUtilities.invokeLater(new Runnable() {
-        			public void run()
-        			{
-        				mainWindow.setVisible(true);
-        			}
-        		});
-        		driveStore.loadFromFile("conf.properties");
         	}
         });
         this.add(loginButton, BorderLayout.PAGE_END);

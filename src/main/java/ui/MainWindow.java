@@ -487,12 +487,60 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		});
 		this.toolBar.add(cmdShowServices);
 		
-		JButton cmdRefresh = new JButton("Refresh Bar");
+		JButton cmdRefresh = new JButton("Refresh");
 		cmdRefresh.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event)
 			{
 				getOverallDriveSize();
+				folderTree.clearSelection();
+                
+                List<RemoteDrive> drives = getDriveStore().getAllDrives();
+                
+                MainWindow.this.fileListModel.clear();
+                MainWindow.this.completeFileListModel.clear();
+                
+                for(RemoteDrive drive : drives) {
+                	System.out.println("Reloading "+drive.getUsername()+ "'s " +drive.getServiceNiceName());
+                	final RemoteFolder root = drive.getRootFolder();
+                	(new SwingWorker<List<RemoteEntry>, Void>() {
+
+						@Override
+						protected List<RemoteEntry> doInBackground() throws Exception 
+						{
+							return root.getEntries();
+						}
+                		
+						@Override
+						protected void done() {
+							List<RemoteEntry> entries;
+							try {
+								entries = this.get();
+							} catch (InterruptedException | ExecutionException e) {
+								e.printStackTrace();
+								return;
+							}
+							
+							Iterator<RemoteEntry> it = entries.iterator();
+		    				while (it.hasNext()) {
+		    					RemoteEntry entry = it.next();
+		    					if (entry.isFile()) {
+		    						RemoteEntry currEntry = entry;
+		    						String scurrEntry = currEntry.getName();
+		    						int curr = scurrEntry.lastIndexOf(".");
+		    					    if(curr <= 0){
+		    					    	//do nothing
+		    					    } else {
+		    					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
+		    					    }
+		    					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
+		    					    	MainWindow.this.fileListModel.addElement(entry.asFile());
+		    					    MainWindow.this.completeFileListModel.addElement(entry.asFile());
+		    					}
+		    				}
+						}
+                	}).execute();
+                }
 			}
 		});
 		this.toolBar.add(cmdRefresh);
@@ -541,75 +589,6 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.folderTree.setMinimumSize(new Dimension(150, 100));
 		JScrollPane fileTreeView = new JScrollPane(this.folderTree);
 		folderTreePanel.add(fileTreeView, BorderLayout.CENTER);
-		
-		this.folderTree.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent e) { }
-			
-			@Override
-			public void mousePressed(MouseEvent e) { }
-			
-			@Override
-			public void mouseExited(MouseEvent e) { }
-			
-			@Override
-			public void mouseEntered(MouseEvent e) { }
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int row=folderTree.getRowForLocation(e.getX(),e.getY());  
-                if(row==-1) { //When user clicks on the "empty surface"  
-                    folderTree.clearSelection();
-                
-	                List<RemoteDrive> drives = getDriveStore().getAllDrives();
-	                
-	                MainWindow.this.fileListModel.clear();
-	                MainWindow.this.completeFileListModel.clear();
-	                
-	                for(RemoteDrive drive : drives) {
-	                	System.out.println("Reloading "+drive.getUsername()+ "'s " +drive.getServiceNiceName());
-	                	final RemoteFolder root = drive.getRootFolder();
-	                	(new SwingWorker<List<RemoteEntry>, Void>() {
-
-							@Override
-							protected List<RemoteEntry> doInBackground() throws Exception 
-							{
-								return root.getEntries();
-							}
-	                		
-							@Override
-							protected void done() {
-								List<RemoteEntry> entries;
-								try {
-									entries = this.get();
-								} catch (InterruptedException | ExecutionException e) {
-									e.printStackTrace();
-									return;
-								}
-								
-								Iterator<RemoteEntry> it = entries.iterator();
-			    				while (it.hasNext()) {
-			    					RemoteEntry entry = it.next();
-			    					if (entry.isFile()) {
-			    						RemoteEntry currEntry = entry;
-			    						String scurrEntry = currEntry.getName();
-			    						int curr = scurrEntry.lastIndexOf(".");
-			    					    if(curr <= 0){
-			    					    	//do nothing
-			    					    } else {
-			    					    	scurrEntry = scurrEntry.substring(curr, scurrEntry.length());
-			    					    }
-			    					    if(!scurrEntry.matches("^\\.\\d+$") || scurrEntry.equals(".1"))
-			    					    	MainWindow.this.fileListModel.addElement(entry.asFile());
-			    					    MainWindow.this.completeFileListModel.addElement(entry.asFile());
-			    					}
-			    				}
-							}
-	                	}).execute();
-	                }
-                }
-			}
-		});
 		
 		this.folderTree.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
