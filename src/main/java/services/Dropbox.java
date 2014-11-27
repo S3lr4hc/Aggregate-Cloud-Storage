@@ -345,6 +345,7 @@ public class Dropbox implements RemoteDrive {
 			try {
 				DbxEntry.File uploadedFile = Dropbox.this.client.uploadFile(this.getPath() + "/" + inputFile.getName(), DbxWriteMode.add(),
                                                                             inputFile.length(), inputStream);
+				inputStream.close();
 				return new DropboxFile(uploadedFile, this);
 			} catch (IOException | DbxException e) {
 				e.printStackTrace();

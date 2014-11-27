@@ -550,6 +550,7 @@ public class GDrive implements RemoteDrive {
 				System.out.println("File was uploaded successfully");
 				
 				RemoteFile uploadedFile = new DriveFile(file, this);
+				file.clear();
 				return uploadedFile;
 
 			} catch (IOException e) {
