@@ -385,6 +385,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.toolBar.add(cmdDelete);
 		
 		final JButton cmdShare = new JButton("Share");
+		//fix acct mgmt
 		cmdShare.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -408,17 +409,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				    	}
 				    }
 				}
-				JTextField emailField = new JTextField();
-				JPasswordField passwordField = new JPasswordField();
-				JTextField recipientField = new JTextField();
-				Object[] fields = {
-						"E-mail", emailField,
-						"Password", passwordField,
-						"Recipient", recipientField
-						};
-				int result = JOptionPane.showConfirmDialog(null, fields, "Share File", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-				if(result == JOptionPane.OK_OPTION) {
-					DownloadFileDialog dfd = null;
+				DownloadFileDialog dfd = null;
 					try {
 						dfd = new DownloadFileDialog(fileOwner, currfilePath);
 					} catch (IOException e2) {
@@ -437,7 +428,12 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 						}
 					}
 					if(fileOwner.size() > 1)
-						sending.sendMail(emailField.getText(), new String(passwordField.getPassword()), recipientField.getText(), currfilePath + "\\" + mainFile2);
+						try {
+							sending.sendFile(currfilePath + "\\" + mainFile2);
+						} catch (Exception e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
 					else  {
 						if(!mainFile.contains(".")) {
 							File file = new File(currfilePath);
@@ -448,7 +444,12 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 								}
 							}
 						}
-						sending.sendMail(emailField.getText(), new String(passwordField.getPassword()), recipientField.getText(), currfilePath + "\\" + mainFile);
+						try {
+							sending.sendFile(currfilePath + "\\" + mainFile);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 					try {
 						if(fileOwner.size() > 1)
@@ -458,7 +459,6 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				}
 			}
 		});
 		cmdShare.setEnabled(false);

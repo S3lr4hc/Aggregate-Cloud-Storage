@@ -76,6 +76,7 @@ public class UploadFileDialog extends JPanel {
 		ArrayList<RemoteDrive> serviceData = remoteDrives.getAllDrives();
 		RemoteDrive largestGoogleDrive = null;
 		RemoteDrive largestDropbox = null;
+		RemoteDrive largestDrive = null;
 		double largestGoogleDriveSpace = 0;
 		double largestDropboxSpace = 0;
 		double smallestDropboxSpace = 0;
@@ -86,8 +87,10 @@ public class UploadFileDialog extends JPanel {
 			RemoteDrive service = serviceData.get(i);
 			serviceNames[i] = String.format("%s's %s", service.getUsername(), service.getServiceNiceName());
 			double availableSpace = service.getTotalSize() - service.getUsedSize();
-			if(mainDriveSize < availableSpace)
-				mainDriveSize = availableSpace; 
+			if(mainDriveSize < availableSpace) {
+				mainDriveSize = availableSpace;
+				largestDrive = serviceData.get(i);
+			}
 			if(service.getServiceNiceName().equals("Google Drive") && availableSpace > largestGoogleDriveSpace) {
 				largestGoogleDrive = serviceData.get(i);
 				largestGoogleDriveSpace = availableSpace;
@@ -121,107 +124,117 @@ public class UploadFileDialog extends JPanel {
 
 		chooseUploadFile = new JFileChooser();
 		chooseUploadFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooseUploadFile.setMultiSelectionEnabled(true);
 		//chooseUploadFile.setAccessory(servicePanel);
 
 		int choice = chooseUploadFile.showDialog(filePanel, "Upload File");
 
 		// If the user selects a file to upload...
 		if (choice == JFileChooser.APPROVE_OPTION) {
-			final File file = chooseUploadFile.getSelectedFile();
-			String fileExtension = file.getName();
-			int pos = fileExtension.lastIndexOf(".");
-			if (pos > 0) {
-				fileExtension = fileExtension.substring(pos);
-			}
-			boolean restrict = false;
-			if((fileExtension.equals(".docx") || fileExtension.equals(".dot") || fileExtension.equals(".rtf") || fileExtension.equals(".doc") || fileExtension.equals(".txt")) && acctSettings.isDocsChecked())
-				restrict = true;
-			else if((fileExtension.equals(".xls") || fileExtension.equals(".xlsx") || fileExtension.equals(".ods") || fileExtension.equals(".csv") || fileExtension.equals(".tsv") || fileExtension.equals(".xlt") || fileExtension.equals(".tab")) && acctSettings.isSpreadsheetChecked())
-				restrict = true;
-			else if((fileExtension.equals(".pptx") || fileExtension.equals(".ppt") || fileExtension.equals(".pps")) && acctSettings.isPresentationChecked())
-				restrict = true;
-			//for loop for custom types
-			for(String curr:acctSettings.getRestrictedTypes()) {
-				if(fileExtension.equals(curr))
+			final File[] files = chooseUploadFile.getSelectedFiles();
+			for(File currFile:files) {
+				String fileExtension = currFile.getName();
+				int pos = fileExtension.lastIndexOf(".");
+				if (pos > 0) {
+					fileExtension = fileExtension.substring(pos);
+				}
+				boolean restrict = false;
+				boolean pettyFile = false;
+				if((fileExtension.equals(".docx") || fileExtension.equals(".dot") || fileExtension.equals(".rtf") || fileExtension.equals(".doc") || fileExtension.equals(".txt")) && acctSettings.isDocsChecked())
 					restrict = true;
-			}
-			UploadMethodWorker umw = null;
-			if(!restrict) {
-				if(file.length() > largestDropboxSpace + largestGoogleDriveSpace && dropboxCount > 1)
-					mainDriveSize = smallestDropboxSpace;
-				double slicePercentage = mainDriveSize/overallSize;
-				// Now we need to determine the service to upload to.
-				fileManipulator.splitFile(file.getAbsolutePath(), (long) (file.length() * slicePercentage));
-				int numberParts = fileManipulator.getNumberParts(file.getAbsolutePath());
-				double divideSplits = Math.ceil((double)(numberParts)/2d);
-				for (int part = 1; part <= numberParts; part++) {
-					File filetoUL = new File(file.getAbsoluteFile() + "." + part);
-					
-					if(largestGoogleDriveSpace > largestDropboxSpace) {
-						if(part <= divideSplits) {
-							umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
-						} else {
-							if(filetoUL.length() > largestDropboxSpace)
-								umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
-							else umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
-						}
-					} else {
-						if(part <= divideSplits) {
-							umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
-						} else {
-							if(filetoUL.length() > largestGoogleDriveSpace)
-								umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
-							else umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
-						}
-					}
-					if(numberParts > 2) {
-						largestGoogleDriveSpace = largestGoogleDrive.getTotalSize() - largestGoogleDrive.getUsedSize();
-						largestDropboxSpace = largestDropbox.getTotalSize() - largestDropbox.getUsedSize();
-						for(int i = 0; i < serviceData.size(); i++) {
-							RemoteDrive service = serviceData.get(i);
-							double availableSpace = service.getTotalSize() - service.getUsedSize();
-							if(service.getServiceNiceName().equals("Google Drive") && availableSpace > largestGoogleDriveSpace) {
-								largestGoogleDrive = serviceData.get(i);
-								largestGoogleDriveSpace = availableSpace;
-							}
-							else if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
-								largestDropbox = serviceData.get(i);
-								largestDropboxSpace = availableSpace;
-							}
-						}
-					}
+				else if((fileExtension.equals(".xls") || fileExtension.equals(".xlsx") || fileExtension.equals(".ods") || fileExtension.equals(".csv") || fileExtension.equals(".tsv") || fileExtension.equals(".xlt") || fileExtension.equals(".tab")) && acctSettings.isSpreadsheetChecked())
+					restrict = true;
+				else if((fileExtension.equals(".pptx") || fileExtension.equals(".ppt") || fileExtension.equals(".pps")) && acctSettings.isPresentationChecked())
+					restrict = true;
+				else if(currFile.length() < mainDriveSize)
+					pettyFile = true;
+				//for loop for custom types
+				for(String curr:acctSettings.getRestrictedTypes()) {
+					if(fileExtension.equals(curr))
+						restrict = true;
+				}
+				UploadMethodWorker umw = null;
+				if(pettyFile) {
+					umw = new UploadMethodWorker(currFile, largestDrive.getRootFolder());
 					umw.execute();
-					filetoUL = null;
 				}
-			}
-			else {
-				umw = new UploadMethodWorker(file, largestGoogleDrive.getRootFolder());
-				umw.execute();
-			}
-			boolean succ;
-			try {
-				succ = umw.get();
-				int res;
-				
-				if (succ) {
-					res = JOptionPane
-							.showConfirmDialog(this, "Upload successful!",
-									"Upload Success",
-									JOptionPane.PLAIN_MESSAGE);
-				} else {
-					res = JOptionPane
-							.showConfirmDialog(this, "Upload failed..."
-									+ "Try again.", "Upload Failure",
-									JOptionPane.ERROR_MESSAGE);
+				else if(!restrict) {
+					if(currFile.length() > largestDropboxSpace + largestGoogleDriveSpace && dropboxCount > 1)
+						mainDriveSize = smallestDropboxSpace;
+					double slicePercentage = mainDriveSize/overallSize;
+					// Now we need to determine the service to upload to.
+					fileManipulator.splitFile(currFile.getAbsolutePath(), (long) (currFile.length() * slicePercentage));
+					int numberParts = fileManipulator.getNumberParts(currFile.getAbsolutePath());
+					double divideSplits = Math.ceil((double)(numberParts)/2d);
+					for (int part = 1; part <= numberParts; part++) {
+						File filetoUL = new File(currFile.getAbsoluteFile() + "." + part);
+						
+						if(largestGoogleDriveSpace > largestDropboxSpace) {
+							if(part <= divideSplits) {
+								umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+							} else {
+								if(filetoUL.length() > largestDropboxSpace)
+									umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+								else umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+							}
+						} else {
+							if(part <= divideSplits) {
+								umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+							} else {
+								if(filetoUL.length() > largestGoogleDriveSpace)
+									umw = new UploadMethodWorker(filetoUL, largestDropbox.getRootFolder());
+								else umw = new UploadMethodWorker(filetoUL, largestGoogleDrive.getRootFolder());
+							}
+						}
+						if(numberParts > 2) {
+							largestGoogleDriveSpace = largestGoogleDrive.getTotalSize() - largestGoogleDrive.getUsedSize();
+							largestDropboxSpace = largestDropbox.getTotalSize() - largestDropbox.getUsedSize();
+							for(int i = 0; i < serviceData.size(); i++) {
+								RemoteDrive service = serviceData.get(i);
+								double availableSpace = service.getTotalSize() - service.getUsedSize();
+								if(service.getServiceNiceName().equals("Google Drive") && availableSpace > largestGoogleDriveSpace) {
+									largestGoogleDrive = serviceData.get(i);
+									largestGoogleDriveSpace = availableSpace;
+								}
+								else if(service.getServiceNiceName().equals("Dropbox") && availableSpace > largestDropboxSpace) {
+									largestDropbox = serviceData.get(i);
+									largestDropboxSpace = availableSpace;
+								}
+							}
+						}
+						umw.execute();
+						filetoUL = null;
+					}
 				}
-				
-				if (res == JOptionPane.YES_OPTION) {
-					// TODO Update file listing.
+				else if(restrict) {
+					umw = new UploadMethodWorker(currFile, largestGoogleDrive.getRootFolder());
+					umw.execute();
 				}
-			} catch (InterruptedException | ExecutionException e1) {
-				e1.printStackTrace();
+				boolean succ;
+				try {
+					succ = umw.get();
+					int res;
+					
+					if (succ) {
+						res = JOptionPane
+								.showConfirmDialog(this, "Upload successful!",
+										"Upload Success",
+										JOptionPane.PLAIN_MESSAGE);
+					} else {
+						res = JOptionPane
+								.showConfirmDialog(this, "Upload failed..."
+										+ "Try again.", "Upload Failure",
+										JOptionPane.ERROR_MESSAGE);
+					}
+					
+					if (res == JOptionPane.YES_OPTION) {
+						// TODO Update file listing.
+					}
+				} catch (InterruptedException | ExecutionException e1) {
+					e1.printStackTrace();
+				}
+				fileManipulator.deleteAll(currFile.getAbsolutePath());
 			}
-			fileManipulator.deleteAll(file.getAbsolutePath());
 		}
 	}
 

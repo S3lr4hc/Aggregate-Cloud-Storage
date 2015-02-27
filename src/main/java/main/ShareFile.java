@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -17,6 +18,15 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
  
 public class ShareFile {
 	
@@ -83,5 +93,36 @@ public class ShareFile {
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	public void sendFile(String filename) throws Exception {
+		 
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpPost httppost = new HttpPost("https://api.teknik.io/upload/post");
+
+            FileBody bin = new FileBody(new File(filename));
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).build();
+
+
+            httppost.setEntity(reqEntity);
+
+            System.out.println("executing request " + httppost.getRequestLine());
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            try {
+                System.out.println("----------------------------------------");
+                System.out.println(response.getStatusLine());
+                HttpEntity resEntity = response.getEntity();
+                if (resEntity != null) {
+                    System.out.println("Response content length: " + resEntity.getContentLength());
+                }
+                System.out.println(EntityUtils.toString(resEntity));
+                EntityUtils.consume(resEntity);
+            } finally {
+                response.close();
+            }
+        } finally {
+            httpclient.close();
+        }
 	}
 }
