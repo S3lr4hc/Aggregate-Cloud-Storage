@@ -303,7 +303,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				
 				UploadFileDialog ufd = null;
 				try {
-					ufd = new UploadFileDialog(remoteDrives, acctSettings, userID/*, folder*/);
+					ufd = new UploadFileDialog(remoteDrives, acctSettings/*, folder*/);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

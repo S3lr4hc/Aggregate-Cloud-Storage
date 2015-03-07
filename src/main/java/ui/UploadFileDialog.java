@@ -53,12 +53,11 @@ public class UploadFileDialog extends JPanel {
 	 * @param remoteDrives The current list of RemoteDrives
 	 * @throws IOException 
 	 */
-	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings, int userID) throws IOException {
+	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings) throws IOException {
 		super(new BorderLayout());
 		
 		this.remoteDrives = remoteDrives;
 		this.acctSettings = acctSettings;
-		this.userID = userID;
 		//this.folder = folder;
 		
 		initUploadFile();
