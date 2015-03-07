@@ -34,6 +34,7 @@ public class LoginWindow extends JFrame implements WindowListener{
 	private PreparedStatement stmt = null;
 	private ResultSet rs = null;
 	private String userAccount = null;
+	private int id = 0;
 	
 	public LoginWindow(final Connection conn) {
 		
@@ -105,7 +106,8 @@ public class LoginWindow extends JFrame implements WindowListener{
 					if(rs.next()) {
 						JOptionPane.showMessageDialog(null, "Correct!");
 						userAccount = rs.getString("username");
-						final JFrame mainWindow = new MainWindow(driveStore, userAccount);
+						id = rs.getInt("ID");
+						final JFrame mainWindow = new MainWindow(driveStore, userAccount, id);
 						LoginWindow.this.dispose();
 		        		
 		        		SwingUtilities.invokeLater(new Runnable() {
@@ -115,7 +117,7 @@ public class LoginWindow extends JFrame implements WindowListener{
 		        			}
 		        		});
 		        		
-		        		driveStore.loadFromFile("conf.properties");
+		        		driveStore.loadFromFile(id);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Error!");

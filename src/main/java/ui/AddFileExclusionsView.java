@@ -6,16 +6,25 @@
 
 package ui;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.mysql.jdbc.PreparedStatement;
+
 import main.AccountSettings;
+import main.DBConnectionFactory;
 import main.RemoteDrive;
 import main.RemoteDriveStore;
 
@@ -42,12 +51,22 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
 	
 	private AccountSettings acctSettings;
 	
-    /**
+	private Connection conn = null;
+	
+	private PreparedStatement stmt = null;
+	
+	private ResultSet rs = null;
+	
+	private int userID = 0;
+    
+	/**
      * Creates new form AddFileExclusionsView
      */
-    public AddFileExclusionsView(RemoteDriveStore remoteDrives, AccountSettings acctSettings) {
+    public AddFileExclusionsView(RemoteDriveStore remoteDrives, AccountSettings acctSettings, int userID) {
     	this.remoteDrives = remoteDrives;
     	this.acctSettings = acctSettings;
+    	this.userID = userID;
+    	conn = DBConnectionFactory.getInstance().getConnection();
         initComponents();
     }
 
@@ -67,7 +86,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         jProgressBar1 = new javax.swing.JProgressBar();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        CustomExclusionList = new javax.swing.JList();
+        CustomExclusionList = new JList();
         
         this.setTitle("File Type Exclusion");
 
@@ -109,6 +128,8 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         
         jLabel1.setText("Storage Space in Use");
 
+        CustomExclusionList.removeAll();
+        
         CustomExclusionList.setModel(new javax.swing.AbstractListModel() {
             ArrayList<String> strings = acctSettings.getRestrictedTypes();
             public int getSize() { return strings.size(); }
@@ -158,6 +179,17 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+        
+        CustomExclusionList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+            	if (evt.getClickCount() == 2) {
+                    acctSettings.removeCustomExtension((String) CustomExclusionList.getSelectedValue(), userID);
+                    System.out.println("Deleted Custom Extension: " + CustomExclusionList.getSelectedValue());
+                    acctSettings.getRestrictedTypes().remove(CustomExclusionList.getSelectedValue());
+                    CustomExclusionList.updateUI();
+                }
+            }
+        });
 
         pack();
         
@@ -192,7 +224,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         if(document)
         	document = false;
         else document = true;
-        acctSettings.setDocsChecked(document);
+        acctSettings.setDocsChecked(document, userID);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
@@ -200,7 +232,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         if(presentation)
         	presentation = false;
         else presentation = true;
-        acctSettings.setPresentationChecked(presentation);
+        acctSettings.setPresentationChecked(presentation, userID);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
     
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
@@ -208,13 +240,24 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         if(spreadsheet)
         	spreadsheet = false;
         else spreadsheet = true;
-        acctSettings.setSpreadsheetChecked(spreadsheet);
+        acctSettings.setSpreadsheetChecked(spreadsheet, userID);
     }//GEN-LAST:event_jCheckBox1ActionPerformed
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
     	JFrame frame = new JFrame("Custom File Types");
     	
     	String extension = JOptionPane.showInputDialog(frame, "Restrict a Type?");
+    	
+    	String sql = "INSERT INTO CustomRestriction(UserID, FileType) VALUES (?,?)";
+		try {
+			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt.setInt(1, userID);
+			stmt.setString(2, extension);
+			stmt.executeUpdate();
+			
+		} catch (SQLException e2) {
+			JOptionPane.showMessageDialog(null, e2);
+		}
     	
     	acctSettings.getRestrictedTypes().add(extension);
     	
@@ -249,11 +292,11 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        /*java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddFileExclusionsView(new RemoteDriveStore(), new AccountSettings()).setVisible(true);
+                new AddFileExclusionsView(new RemoteDriveStore(), new AccountSettings(), userID).setVisible(true);
             }
-        });
+        });*/
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

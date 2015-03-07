@@ -46,16 +46,19 @@ public class UploadFileDialog extends JPanel {
 	private RemoteFolder folder;
 
 	private AccountSettings acctSettings;
+	
+	private int userID;
 	/**
 	 * Create a dialog for uploading a file for a list of RemoteDrives
 	 * @param remoteDrives The current list of RemoteDrives
 	 * @throws IOException 
 	 */
-	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings) throws IOException {
+	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings, int userID) throws IOException {
 		super(new BorderLayout());
 		
 		this.remoteDrives = remoteDrives;
 		this.acctSettings = acctSettings;
+		this.userID = userID;
 		//this.folder = folder;
 		
 		initUploadFile();
@@ -146,15 +149,21 @@ public class UploadFileDialog extends JPanel {
 					restrict = true;
 				else if((fileExtension.equals(".pptx") || fileExtension.equals(".ppt") || fileExtension.equals(".pps")) && acctSettings.isPresentationChecked())
 					restrict = true;
-				else if(currFile.length() < mainDriveSize)
+				else if(currFile.length() < mainDriveSize) {
 					pettyFile = true;
+				}
 				//for loop for custom types
 				for(String curr:acctSettings.getRestrictedTypes()) {
-					if(fileExtension.equals(curr))
+					if(fileExtension.equals(curr)) {
 						restrict = true;
+					}
 				}
 				UploadMethodWorker umw = null;
-				if(pettyFile) {
+				if(pettyFile && restrict) {
+					umw = new UploadMethodWorker(currFile, largestGoogleDrive.getRootFolder());
+					umw.execute();
+				}
+				else if(pettyFile) {
 					umw = new UploadMethodWorker(currFile, largestDrive.getRootFolder());
 					umw.execute();
 				}

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +58,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import com.mysql.jdbc.PreparedStatement;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import main.AccountSettings;
@@ -142,6 +144,11 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	private String userAccount;
 	
 	/**
+	 * String that shows the id of the current user
+	 */
+	private int userID;
+	
+	/**
 	 * Double that shows the total space
 	 */
 	private static double totalSize;
@@ -160,7 +167,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	 * Create a MainWindow to display a list of RemoteDrives
 	 * @param driveStore The RemoteDrives to display
 	 */
-	public MainWindow(RemoteDriveStore driveStore, String userAccount)
+	public MainWindow(RemoteDriveStore driveStore, String userAccount, int id)
 	{
 		super();
 		
@@ -169,7 +176,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		this.userAccount = userAccount;
 		this.currfilePath = System.getProperty("user.home");
 		this.fileManipulator = new FileManipulation();
-		this.acctSettings = new AccountSettings();
+		this.userID = id;
+		this.acctSettings = new AccountSettings(this.userID);
 		
 		// Set defaults
 		this.setTitle("Fusein");
@@ -217,7 +225,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView(remoteDrives, acctSettings);
+				AddFileExclusionsView fileExclusionsView = new AddFileExclusionsView(remoteDrives, acctSettings, userID);
 				fileExclusionsView.setVisible(true);
 			}
 		});
@@ -295,7 +303,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				
 				UploadFileDialog ufd = null;
 				try {
-					ufd = new UploadFileDialog(remoteDrives, acctSettings/*, folder*/);
+					ufd = new UploadFileDialog(remoteDrives, acctSettings, userID/*, folder*/);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -851,7 +859,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		Connection conn = DBConnectionFactory.getInstance().getConnection();
 		LoginWindow loginWindow = new LoginWindow(conn);
 		
-		this.remoteDrives.saveToFile("conf.properties");
+		this.remoteDrives.saveToFile(userID);
 		this.dispose();
 		loginWindow.setVisible(true);
 	}

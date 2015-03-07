@@ -4,9 +4,21 @@ package main;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import ui.LoginWindow;
+import ui.MainWindow;
+
+import com.mysql.jdbc.PreparedStatement;
 
 /**
  * Maintains a set of remote drives.
@@ -18,6 +30,9 @@ public class RemoteDriveStore
 {
 	private ArrayList<RemoteDrive> remoteDrives;
 	private ArrayList<DriveStoreEventListener> listeners;
+	private Connection conn = null;
+	private PreparedStatement stmt = null;
+	private ResultSet rs = null;
 	
 	/**
 	 * Initialize an empty RemoteDriveStore.
@@ -26,6 +41,7 @@ public class RemoteDriveStore
 	{
 		remoteDrives = new ArrayList<RemoteDrive>();
 		listeners = new ArrayList<DriveStoreEventListener>();
+		conn = DBConnectionFactory.getInstance().getConnection();
 	}
 	
 	/**
@@ -69,7 +85,15 @@ public class RemoteDriveStore
 		while (it.hasNext()) {
 			it.next().driveRemoved(drive);
 		}
-		
+		String sql = "DELETE FROM Drive WHERE Token=?";
+		try {
+			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt.setString(1, drive.getAuthToken());
+			stmt.executeUpdate();
+			
+		} catch (SQLException e2) {
+			JOptionPane.showMessageDialog(null, e2);
+		}
 		System.out.printf("Removed provider \"%s\"\n", drive.getServiceNiceName());
 	}
 	
@@ -134,30 +158,45 @@ public class RemoteDriveStore
 		return this.remoteDrives.iterator();
 	}
 	
-	public void saveToFile(String path)
+	public void saveToFile(int userID)
 	{
-		Properties properties = new Properties();
+		
+		//Properties properties = new Properties();
 		
 		Iterator<RemoteDrive> it = this.remoteDrives.iterator();
-		int i = 0;
+		//int i = 0;
 		while (it.hasNext()) {
 			RemoteDrive drive = it.next();
-			properties.setProperty("service" + i, String.format("%s:%s", drive.getServiceNiceName(), drive.getAuthToken()));
-			i++;
+			//properties.setProperty("service" + i, String.format("%s:%s", drive.getServiceNiceName(), drive.getAuthToken()));
+			//i++;
+			String sql = "INSERT INTO Drive(UserID, Service, Token) VALUES (?,?,?) ON DUPLICATE KEY UPDATE Token = VALUES(Token)";
+			try {
+				stmt = (PreparedStatement) conn.prepareStatement(sql);
+				stmt.setInt(1, userID);
+				stmt.setString(2, drive.getServiceNiceName());
+				stmt.setString(3, drive.getAuthToken());
+				stmt.executeUpdate();
+				
+			} catch (SQLException e2) {
+				JOptionPane.showMessageDialog(null, e2);
+			}
 		}
 		
-		try {
+		/*try {
 			FileWriter writer = new FileWriter(path);
 			properties.store(writer, "Authentication Tokens");
 			writer.close();
 		} catch (IOException e) {
 			System.err.println("Failed to write " + path);
-		}
+		}*/
 	}
 	
-	public void loadFromFile(String path)
+	public void loadFromFile(int userID)
 	{
-		FileReader reader;
+		String service = "";
+		String token = "";
+		RemoteDriveFactory rdFactory = new RemoteDriveFactory();
+		/*FileReader reader;
 		Properties properties = new Properties();
 		
 		try {
@@ -194,6 +233,29 @@ public class RemoteDriveStore
 			
 			drive.setAuthToken(authToken);
 			this.addDrive(drive);
+		}*/
+		String sql = "SELECT * FROM Drive WHERE UserID = ?";
+		try {
+			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt.setInt(1, userID);
+			rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				service = rs.getString("Service");				
+				token = rs.getString("Token");
+				System.out.printf("Restoring %s provider from file...\n", service);
+				RemoteDrive drive = rdFactory.createRemoteDrive(service);
+				if (drive == null) {
+					System.err.printf("Bad provider name \"%s\"!\n", service);
+					continue;
+				}
+				
+				drive.setAuthToken(token);
+				this.addDrive(drive);
+			}
+			
+		} catch (SQLException e2) {
+			JOptionPane.showMessageDialog(null, e2);
 		}
 	}
 }
