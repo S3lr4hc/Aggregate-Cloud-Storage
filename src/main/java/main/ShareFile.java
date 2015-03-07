@@ -18,6 +18,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -27,6 +28,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
  
 public class ShareFile {
 	
@@ -116,7 +118,17 @@ public class ShareFile {
                 if (resEntity != null) {
                     System.out.println("Response content length: " + resEntity.getContentLength());
                 }
-                System.out.println(EntityUtils.toString(resEntity));
+                //System.out.println(EntityUtils.toString(resEntity));
+                String retSrc = EntityUtils.toString(resEntity);
+                retSrc = retSrc.substring(1, retSrc.length()-1);
+                System.out.println(retSrc);
+                JSONObject result = new JSONObject(retSrc); //Convert String to JSON Object
+                
+                String url = result.getJSONObject("results").getJSONObject("file").getString("url");
+                
+                JTextArea textarea= new JTextArea(url);
+                textarea.setEditable(true);
+                JOptionPane.showMessageDialog(null, textarea, "URL Share Link", JOptionPane.INFORMATION_MESSAGE);
                 EntityUtils.consume(resEntity);
             } finally {
                 response.close();
