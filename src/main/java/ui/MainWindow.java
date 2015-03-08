@@ -772,7 +772,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			}
 		}
 		
-		DefaultTreeModel model = (DefaultTreeModel)this.folderTree.getModel();
+		/*DefaultTreeModel model = (DefaultTreeModel)this.folderTree.getModel();
 		FolderTreeNode root = (FolderTreeNode)model.getRoot();
 		Enumeration<FolderTreeNode> en = (Enumeration<FolderTreeNode>)root.children();
 		while (en.hasMoreElements()) {
@@ -780,7 +780,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			if (node.getFolder().getRemoteDrive() == drive) {
 				model.removeNodeFromParent(node);
 			}
-		}
+		}*/
 	}
 	
 	@Override
