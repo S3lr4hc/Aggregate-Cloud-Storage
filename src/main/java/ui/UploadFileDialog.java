@@ -166,7 +166,7 @@ public class UploadFileDialog extends JPanel {
 					umw = new UploadMethodWorker(currFile, largestDrive.getRootFolder());
 					umw.execute();
 				}
-				else if(!restrict) {
+				else if(!pettyFile) {
 					if(currFile.length() > largestDropboxSpace + largestGoogleDriveSpace && dropboxCount > 1)
 						mainDriveSize = smallestDropboxSpace;
 					double slicePercentage = mainDriveSize/overallSize;
