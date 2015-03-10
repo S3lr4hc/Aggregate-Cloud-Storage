@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -21,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -96,7 +99,7 @@ public class ShareFile {
 			throw new RuntimeException(e);
 		}
 	}
-	public void sendFile(String filename) throws Exception {
+	public void sendFile(String filename) throws ParseException, IOException {
 		 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
@@ -110,7 +113,18 @@ public class ShareFile {
             httppost.setEntity(reqEntity);
 
             System.out.println("executing request " + httppost.getRequestLine());
-            CloseableHttpResponse response = httpclient.execute(httppost);
+            CloseableHttpResponse response = null;
+			try {
+				response = httpclient.execute(httppost);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, "Sharing Failed");
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, "Sharing Failed");
+				e.printStackTrace();
+			}
             try {
                 System.out.println("----------------------------------------");
                 System.out.println(response.getStatusLine());

@@ -148,7 +148,7 @@ public class UploadFileDialog extends JPanel {
 					restrict = true;
 				else if((fileExtension.equals(".pptx") || fileExtension.equals(".ppt") || fileExtension.equals(".pps")) && acctSettings.isPresentationChecked())
 					restrict = true;
-				else if(currFile.length() < mainDriveSize) {
+				if(currFile.length() < mainDriveSize) {
 					pettyFile = true;
 				}
 				//for loop for custom types
