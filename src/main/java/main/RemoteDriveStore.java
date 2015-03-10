@@ -196,6 +196,7 @@ public class RemoteDriveStore
 		String service = "";
 		String token = "";
 		RemoteDriveFactory rdFactory = new RemoteDriveFactory();
+		long startTime = System.nanoTime();
 		/*FileReader reader;
 		Properties properties = new Properties();
 		
@@ -253,7 +254,8 @@ public class RemoteDriveStore
 				drive.setAuthToken(token);
 				this.addDrive(drive);
 			}
-			
+			long estimatedTime = System.nanoTime() - startTime;
+    		System.out.println("Elapsed Time: " + estimatedTime);
 		} catch (SQLException e2) {
 			JOptionPane.showMessageDialog(null, e2);
 		}
