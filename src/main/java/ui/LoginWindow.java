@@ -25,13 +25,13 @@ import main.DBConnectionFactory;
 import main.RemoteDrive;
 import main.RemoteDriveStore;
 
-import com.mysql.jdbc.PreparedStatement;
+import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
 
 
 public class LoginWindow extends JFrame implements WindowListener{
 	
 	private Connection conn = null;
-	private PreparedStatement stmt = null;
+	private SQLServerPreparedStatement stmt = null;
 	private ResultSet rs = null;
 	private String userAccount = null;
 	private int id = 0;
@@ -98,7 +98,7 @@ public class LoginWindow extends JFrame implements WindowListener{
         	public void actionPerformed(ActionEvent e) {
         		String sql = "SELECT * from UserAccount where username = ? and password = ?";
         		try {
-					stmt = (PreparedStatement) conn.prepareStatement(sql);
+					stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 					stmt.setString(1, usernameField.getText());
 					stmt.setString(2, new String(loginField.getPassword()));
 					rs = stmt.executeQuery();

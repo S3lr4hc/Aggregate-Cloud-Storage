@@ -18,9 +18,13 @@ public class ConcreteDBConnectionFactory extends DBConnectionFactory { //creates
 	public Connection getConnection() {
 		
 		 try {
+			 	String connectionString = 
+			            getUrl() + ";" +  
+			                "database="+ getDatabase() + ";" + 
+			                "user="+ getUsername() + ";" +  
+			                "password=" + getPassword();
 	            Class.forName(getDriverName());
-	            Connection conn = DriverManager.getConnection(getUrl(),getUsername() ,getPassword() );
-	            
+	            Connection conn = DriverManager.getConnection(connectionString);
 	            return conn;
 	        } catch (SQLException ex) {
 	            JOptionPane.showMessageDialog(null, ex);

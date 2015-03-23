@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
-import com.mysql.jdbc.PreparedStatement;
+import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
 
 public class AccountSettings {
 	//docx, dot, rtf, doc, txt
@@ -22,7 +22,7 @@ public class AccountSettings {
 	
 	private Connection conn = null;
 	
-	private PreparedStatement stmt = null;
+	private SQLServerPreparedStatement stmt = null;
 	
 	private ResultSet rs = null;
 	
@@ -38,7 +38,7 @@ public class AccountSettings {
 		String sql = "SELECT * FROM CustomRestriction WHERE UserID = ?";
 		restrictedTypes.clear();
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setInt(1, userID);
 			rs = stmt.executeQuery();
 			
@@ -56,7 +56,7 @@ public class AccountSettings {
 		int temp;
 		String sql = "SELECT * FROM ComplementaryRestriction WHERE UserID = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setInt(1, userID);
 			rs = stmt.executeQuery();
 			
@@ -85,7 +85,7 @@ public class AccountSettings {
 	public void setDocsChecked(boolean docsChecked, int userID) {
 		String sql = "UPDATE ComplementaryRestriction SET DocsChecked = ? WHERE UserID = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			if(docsChecked == true)
 			stmt.setInt(1, 1);
 			else stmt.setInt(1, 0);
@@ -103,7 +103,7 @@ public class AccountSettings {
 	public void setPresentationChecked(boolean presentationChecked, int userID) {
 		String sql = "UPDATE ComplementaryRestriction SET PresentationChecked = ? WHERE UserID = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			if(presentationChecked == true)
 				stmt.setInt(1, 1);
 			else stmt.setInt(1, 0);
@@ -121,7 +121,7 @@ public class AccountSettings {
 	public void setSpreadsheetChecked(boolean spreadsheetChecked, int userID) {
 		String sql = "UPDATE ComplementaryRestriction SET SpreadSheetChecked = ? WHERE UserID = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			if(spreadsheetChecked == true)
 				stmt.setInt(1, 1);
 			else stmt.setInt(1, 0);
@@ -142,7 +142,7 @@ public class AccountSettings {
 	public void removeCustomExtension(String fileType, int userID) {
 		String sql = "DELETE FROM CustomRestriction WHERE UserID = ? AND FileType = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setInt(1, userID);
 			stmt.setString(2, fileType);
 			stmt.executeUpdate();

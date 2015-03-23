@@ -58,7 +58,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.mysql.jdbc.PreparedStatement;
+import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import main.AccountSettings;

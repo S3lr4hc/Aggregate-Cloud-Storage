@@ -17,6 +17,7 @@ public abstract class DBConnectionFactory { //Abstract Factory for database conn
     private static String url="";
     private static String username="";
     private static String password="";
+    private static String database="";
     
     public static DBConnectionFactory getInstance(){
     	
@@ -26,6 +27,7 @@ public abstract class DBConnectionFactory { //Abstract Factory for database conn
         url = rb.getString("url");
         username = rb.getString("username");
         password = rb.getString("password");
+        database = rb.getString("database");
         
         return new ConcreteDBConnectionFactory();
     }
@@ -63,4 +65,12 @@ public abstract class DBConnectionFactory { //Abstract Factory for database conn
     public void setPassword(String password) {
         this.password = password;
     }
+
+	public static String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
+	}
 }

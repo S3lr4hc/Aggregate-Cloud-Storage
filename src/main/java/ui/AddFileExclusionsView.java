@@ -21,7 +21,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import com.mysql.jdbc.PreparedStatement;
+import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
 
 import main.AccountSettings;
 import main.DBConnectionFactory;
@@ -53,7 +53,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
 	
 	private Connection conn = null;
 	
-	private PreparedStatement stmt = null;
+	private SQLServerPreparedStatement stmt = null;
 	
 	private ResultSet rs = null;
 	
@@ -250,7 +250,7 @@ public class AddFileExclusionsView extends JFrame implements WindowListener {
     	
     	String sql = "INSERT INTO CustomRestriction(UserID, FileType) VALUES (?,?)";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setInt(1, userID);
 			stmt.setString(2, extension);
 			stmt.executeUpdate();

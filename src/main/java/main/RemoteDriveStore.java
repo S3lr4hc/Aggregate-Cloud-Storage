@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import ui.LoginWindow;
 import ui.MainWindow;
 
-import com.mysql.jdbc.PreparedStatement;
+import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
 
 /**
  * Maintains a set of remote drives.
@@ -31,7 +31,7 @@ public class RemoteDriveStore
 	private ArrayList<RemoteDrive> remoteDrives;
 	private ArrayList<DriveStoreEventListener> listeners;
 	private Connection conn = null;
-	private PreparedStatement stmt = null;
+	private SQLServerPreparedStatement stmt = null;
 	private ResultSet rs = null;
 	
 	/**
@@ -87,7 +87,7 @@ public class RemoteDriveStore
 		}
 		String sql = "DELETE FROM Drive WHERE Token=?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setString(1, drive.getAuthToken());
 			stmt.executeUpdate();
 			
@@ -165,20 +165,35 @@ public class RemoteDriveStore
 		
 		Iterator<RemoteDrive> it = this.remoteDrives.iterator();
 		//int i = 0;
+		int count = 0;
 		while (it.hasNext()) {
 			RemoteDrive drive = it.next();
+			String sql1 = "SELECT COUNT(Token) AS Total FROM Drive WHERE Token=?";
+			try {
+				stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql1);
+				stmt.setString(1, drive.getAuthToken());
+				ResultSet result = stmt.executeQuery();
+				if(result.next()) {
+					count = result.getInt("Total");
+				}
+				System.out.println(count);
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, e);
+			}
 			//properties.setProperty("service" + i, String.format("%s:%s", drive.getServiceNiceName(), drive.getAuthToken()));
 			//i++;
-			String sql = "INSERT INTO Drive(UserID, Service, Token) VALUES (?,?,?) ON DUPLICATE KEY UPDATE Token = VALUES(Token)";
-			try {
-				stmt = (PreparedStatement) conn.prepareStatement(sql);
-				stmt.setInt(1, userID);
-				stmt.setString(2, drive.getServiceNiceName());
-				stmt.setString(3, drive.getAuthToken());
-				stmt.executeUpdate();
-				
-			} catch (SQLException e2) {
-				JOptionPane.showMessageDialog(null, e2);
+			if(count == 0) {
+				String sql = "INSERT INTO Drive(UserID, Service, Token) VALUES (?,?,?)";
+				try {
+					stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
+					stmt.setInt(1, userID);
+					stmt.setString(2, drive.getServiceNiceName());
+					stmt.setString(3, drive.getAuthToken());
+					stmt.executeUpdate();
+					
+				} catch (SQLException e2) {
+					JOptionPane.showMessageDialog(null, e2);
+				}
 			}
 		}
 		
@@ -237,7 +252,7 @@ public class RemoteDriveStore
 		}*/
 		String sql = "SELECT * FROM Drive WHERE UserID = ?";
 		try {
-			stmt = (PreparedStatement) conn.prepareStatement(sql);
+			stmt = (SQLServerPreparedStatement) conn.prepareStatement(sql);
 			stmt.setInt(1, userID);
 			rs = stmt.executeQuery();
 			
