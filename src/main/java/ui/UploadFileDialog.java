@@ -147,7 +147,7 @@ public class UploadFileDialog extends JPanel {
 					fileExtension = fileExtension.substring(pos);
 				}
 				boolean restrict = false;
-				boolean pettyFile = false;
+				boolean pettyFile = split;
 				if((fileExtension.equals(".docx") || fileExtension.equals(".dot") || fileExtension.equals(".rtf") || fileExtension.equals(".doc") || fileExtension.equals(".txt")) && acctSettings.isDocsChecked())
 					restrict = true;
 				else if((fileExtension.equals(".xls") || fileExtension.equals(".xlsx") || fileExtension.equals(".ods") || fileExtension.equals(".csv") || fileExtension.equals(".tsv") || fileExtension.equals(".xlt") || fileExtension.equals(".tab")) && acctSettings.isSpreadsheetChecked())
