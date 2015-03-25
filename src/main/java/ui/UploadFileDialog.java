@@ -47,19 +47,21 @@ public class UploadFileDialog extends JPanel {
 
 	private AccountSettings acctSettings;
 	
+	private boolean split;
+	
 	private int userID;
 	/**
 	 * Create a dialog for uploading a file for a list of RemoteDrives
 	 * @param remoteDrives The current list of RemoteDrives
 	 * @throws IOException 
 	 */
-	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings) throws IOException {
+	public UploadFileDialog(RemoteDriveStore remoteDrives, AccountSettings acctSettings, boolean split) throws IOException {
 		super(new BorderLayout());
 		
 		this.remoteDrives = remoteDrives;
 		this.acctSettings = acctSettings;
 		//this.folder = folder;
-		
+		this.split = split;
 		initUploadFile();
 	}
 
@@ -111,6 +113,10 @@ public class UploadFileDialog extends JPanel {
 			}
 			overallSize += availableSpace;
 		}
+		//just for checking if file will be split upon upload
+		if(split == true)
+			System.out.println("File will be split apart");
+		else System.out.println("File won't be split apart");
 		/*BigDecimal bd = new BigDecimal(slicePercentage);
 		bd = bd.setScale(2, BigDecimal.ROUND_DOWN); // setScale is immutable
 		slicePercentage = bd.doubleValue();

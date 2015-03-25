@@ -158,6 +158,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	 */
 	private static double usedSize;
 	
+	private boolean split;
+	
 	private String currfilePath;
 	
 	private FileManipulation fileManipulator;
@@ -187,6 +189,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = scrSize.width / 2 - this.getWidth() / 2;
 		int y = scrSize.height / 2 - this.getHeight() / 2;
+		this.split = false;
 		this.setLocation(x, y);
 		
 		// We'll handle closing ourselves.
@@ -241,6 +244,20 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			}
 		});
 		menuOptions.add(cmdShareAlloc);
+		
+		JMenuItem cmdSplit = new JMenuItem("Split Uploads");
+		cmdSplit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int in = JOptionPane.showConfirmDialog(null, "Split All", "Please Select", JOptionPane.YES_NO_OPTION);
+				if(in == JOptionPane.YES_OPTION)
+					split = true;
+				else split = false;
+				System.out.println(split);
+			}
+		});
+		menuOptions.add(cmdSplit);
 		
 		JMenuItem cmdFileLocation = new JMenuItem("Set File Location");
 		cmdFileLocation.addActionListener(new ActionListener() {
@@ -303,7 +320,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				
 				UploadFileDialog ufd = null;
 				try {
-					ufd = new UploadFileDialog(remoteDrives, acctSettings/*, folder*/);
+					ufd = new UploadFileDialog(remoteDrives, acctSettings, split/*, folder*/);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -740,6 +757,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		for(RemoteDrive drive: drives) {
 			MainWindow.totalSize += drive.getTotalSize();
 			MainWindow.usedSize += drive.getUsedSize();
+			System.out.println(drive.getTotalSize() + "/" + drive.getUsedSize());
 		}
 		double overAll = (usedSize/totalSize) * 100;
     	overAll = Math.ceil(overAll);
