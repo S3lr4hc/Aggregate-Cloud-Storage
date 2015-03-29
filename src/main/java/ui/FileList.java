@@ -29,11 +29,11 @@ public class FileList extends JList<RemoteFile>
 	 * Create a FileList from a list of RemoteFiles
 	 * @param model List of RemoteFiles
 	 */
-	public FileList(DefaultListModel<RemoteFile> model)
+	public FileList(DefaultListModel<RemoteFile> model, DefaultListModel<RemoteFile> fullModel)
 	{
 		super(model); // ha ha ha
 
-		this.setCellRenderer(new FileCellRenderer());
+		this.setCellRenderer(new FileCellRenderer(fullModel));
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
@@ -65,17 +65,20 @@ public class FileList extends JList<RemoteFile>
 		ImageIcon iconDropbox;
 		ImageIcon iconGDrive;
 		ImageIcon iconSplit;
+		DefaultListModel<RemoteFile> fullModel;
 		
 		/**
 		 * Create a FileCellRenderer
+		 * @param fullModel 
 		 */
-		public FileCellRenderer()
+		public FileCellRenderer(DefaultListModel<RemoteFile> fullModel)
 		{
 			super();
 			
 			this.iconDropbox = new ImageIcon(ClassLoader.getSystemResource("service_icons/dropbox.png"));
 			this.iconGDrive = new ImageIcon(ClassLoader.getSystemResource("service_icons/gdrive.png"));
 			this.iconSplit = new ImageIcon(ClassLoader.getSystemResource("service_icons/split.png"));
+			this.fullModel = fullModel;
 		}
 
 		@Override
@@ -92,11 +95,28 @@ public class FileList extends JList<RemoteFile>
 		    	mainFile = mainFile.substring(0, curr);
 		    }
 		    if(mainFileExtension.equals(".1")) {
-		    	this.setText(mainFile + " Split File");
+		    	long sum = file.getSize();
+		    	for(int i = 0; i < fullModel.getSize(); i++) {
+		    		String fullFile = fullModel.get(i).getName();
+		    		String fullExt = "";
+		    		int curr2 = fullFile.lastIndexOf(".");
+		    		if(curr2 > 0) {
+		    			fullExt = fullFile.substring(curr2, fullFile.length());
+		    			fullFile = fullFile.substring(0, curr2);
+		    			if(!fullExt.equals(".1")) {
+		    				if(mainFile.equals(fullFile)) {
+		    					sum += fullModel.get(i).getSize();
+		    				}
+		    				else continue;
+		    			}
+		    			else continue;
+		    		}
+		    	}
+		    	this.setText(mainFile + " Split File " + sum + " bytes");
 		    	this.setIcon(this.iconSplit);
 		    }
 		    else {
-		    	this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName());
+		    	this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.getSize() + " bytes");
 		    	if(file.getRemoteDrive().getServiceNiceName().equals("Dropbox"))
 		    		this.setIcon(this.iconDropbox);
 		    	else this.setIcon(this.iconGDrive);

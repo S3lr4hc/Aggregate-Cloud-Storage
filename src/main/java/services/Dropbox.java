@@ -266,6 +266,11 @@ public class Dropbox implements RemoteDrive {
 		public RemoteFile asFile() {
 			return this;
 		}
+
+		@Override
+		public long getSize() {
+			return this.dbxFile.numBytes;
+		}
 	}
 	
 	/**

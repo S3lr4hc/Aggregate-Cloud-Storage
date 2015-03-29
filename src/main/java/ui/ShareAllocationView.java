@@ -8,6 +8,7 @@ package ui;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -100,10 +101,12 @@ public class ShareAllocationView extends JFrame implements WindowListener {
         
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
+        
+        DecimalFormat df = new DecimalFormat("####0.000");
+        
+        jLabel1.setText("Google Drive(in GB): " + df.format(GoogleusedSize / 1024 / 1024 / 1024) + "/" + df.format(GoogletotalSize / 1024 / 1024 / 1024));
 
-        jLabel1.setText("Google Drive");
-
-        jLabel2.setText("Dropbox");
+        jLabel2.setText("Dropbox(in GB): " + df.format(DropboxusedSize / 1024 / 1024 / 1024) + "/" + df.format(DropboxtotalSize / 1024 / 1024 / 1024));
 
         /*jLabel3.setText("Legend");
 

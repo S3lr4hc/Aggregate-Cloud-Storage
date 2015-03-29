@@ -18,13 +18,13 @@ import java.nio.ByteBuffer;
 public class FileManipulation {
 	
 	public static void main(String[] args) throws IOException {
-		//splitFile("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx", 5 * 1024);
+		splitFile("C:/Users/hp/Desktop/1.1-1.2.docx", 5 * 1024);
 		//System.out.println(getNumberParts("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx"));
 		//deleteAll("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 		//join("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 	}
 	
-	public void splitFile(String filename, long splitSize) throws IOException {
+	public static void splitFile(String filename, long splitSize) throws IOException {
 		
 		int bufferSize = (int) (2 * splitSize);
 		

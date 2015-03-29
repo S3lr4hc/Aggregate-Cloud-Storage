@@ -679,7 +679,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		
 		this.completeFileListModel = new DefaultListModel<>();
 		this.fileListModel = new DefaultListModel<>();
-		this.fileList = new FileList(this.fileListModel);
+		this.fileList = new FileList(this.fileListModel, this.completeFileListModel);
 		
 		this.fileList.addListSelectionListener(new ListSelectionListener() {
 			@Override

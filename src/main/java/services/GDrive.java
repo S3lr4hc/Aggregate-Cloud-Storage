@@ -241,6 +241,13 @@ public class GDrive implements RemoteDrive {
 		}
 		
 		@Override
+		public long getSize() {
+			if(this.driveFile.getFileSize() == null)
+				return 0;
+			return this.driveFile.getFileSize();
+		}
+		
+		@Override
 		public String getPath() {
 			return this.driveFile.getId();
 		}

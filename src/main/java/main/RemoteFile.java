@@ -38,4 +38,6 @@ public interface RemoteFile extends RemoteEntry
 	 * @return True if the file was deleted successfully, false otherwise.
 	 */
 	public boolean delete();
+	
+	public long getSize();
 }
