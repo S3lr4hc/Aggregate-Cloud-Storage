@@ -160,6 +160,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	
 	private boolean split;
 	
+	private boolean splitMethod;
+	
 	private String currfilePath;
 	
 	private FileManipulation fileManipulator;
@@ -190,6 +192,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		int x = scrSize.width / 2 - this.getWidth() / 2;
 		int y = scrSize.height / 2 - this.getHeight() / 2;
 		this.split = false;
+		this.splitMethod = false;
 		this.setLocation(x, y);
 		
 		// We'll handle closing ourselves.
@@ -259,6 +262,22 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		});
 		menuOptions.add(cmdSplit);
 		
+		JMenuItem cmdSplitMethod = new JMenuItem("Split Method");
+		cmdSplitMethod.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Object[] options = {"Ratio",
+	                    			"Best Fit"};
+				int in = JOptionPane.showConfirmDialog(null, "Split Method?", "Please Select", JOptionPane.YES_NO_OPTION);
+				if(in == JOptionPane.YES_OPTION)
+					splitMethod = true;
+				else splitMethod = false;
+				System.out.println(splitMethod);
+			}
+		});
+		menuOptions.add(cmdSplit);
+		
 		JMenuItem cmdFileLocation = new JMenuItem("Set File Location");
 		cmdFileLocation.addActionListener(new ActionListener() {
 			
@@ -320,7 +339,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				
 				UploadFileDialog ufd = null;
 				try {
-					ufd = new UploadFileDialog(remoteDrives, acctSettings, split/*, folder*/);
+					ufd = new UploadFileDialog(remoteDrives, acctSettings, split, splitMethod/*, folder*/);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

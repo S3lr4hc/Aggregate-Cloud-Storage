@@ -4,11 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * A class to take a file and split it into smaller files 
@@ -18,13 +20,71 @@ import java.nio.ByteBuffer;
 public class FileManipulation {
 	
 	public static void main(String[] args) throws IOException {
-		splitFile("C:/Users/hp/Desktop/1.1-1.2.docx", 5 * 1024);
+		/*ArrayList<Double> sizes = new ArrayList<Double>();
+		sizes.add((double) (5 * 1024));
+		sizes.add((double) (6 * 1024));
+		sizes.add((double) (7 * 1024));
+		
+		splitFile("C:/Users/hp/Desktop/1.1-1.2.docx", sizes);*/
 		//System.out.println(getNumberParts("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_6.docx"));
 		//deleteAll("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 		//join("C:/Users/hp/Desktop/STTREND_Reflection_Paper_No_9.docx");
 	}
 	
-	public static void splitFile(String filename, long splitSize) throws IOException {
+	public void splitFile(String filename, ArrayList<Double> driveSizes) throws IOException {
+		// open the file
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(filename));
+				
+		// get the file length
+		File f = new File(filename);
+		Double fileSize = (double) f.length();
+				
+		// loop for each full chunk
+		int subfile;
+		Double currentSize = fileSize;
+		//assume all drive sizes are acquired
+		//fileSize/chunkSize to be changed to value depending on drivesize
+		//chunksize dependent of storage sizes
+		//1st part will be placed on the largest storage
+		for (subfile = 0; subfile < driveSizes.size() - 1/*fileSize / chunkSize[i]*/; subfile++)
+		{
+			if(currentSize < driveSizes.get(subfile))
+				break;
+			// open the output file
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename + "." + (subfile+1)));
+					
+			// write the right amount of bytes
+			for (int currentByte = 0; currentByte < driveSizes.get(subfile); currentByte++)
+			{
+				// load one byte from the input file and write it to the output file
+				out.write(in.read());
+			}
+			currentSize -= driveSizes.get(subfile);
+			System.out.println("FileSize:"+fileSize+" ChunkSize:"+driveSizes.get(subfile));
+			// close the file
+			out.close();
+		}
+				
+		// loop for the last chunk (which may be smaller than the chunk size)
+		if (currentSize != 0)
+		{
+			// open the output file
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename + "." + (subfile+1)));
+					
+			// write the rest of the file
+			int b;
+			while ((b = in.read()) != -1)
+				out.write(b);
+						
+			// close the file
+			out.close();			
+		}
+				
+		// close the file
+		in.close();
+	}
+	
+	public void splitFile(String filename, long splitSize) throws IOException {
 		
 		int bufferSize = (int) (2 * splitSize);
 		
