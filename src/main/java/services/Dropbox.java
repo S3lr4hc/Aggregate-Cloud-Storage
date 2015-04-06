@@ -392,7 +392,7 @@ public class Dropbox implements RemoteDrive {
 	@Override
 	public double getUsedSize() {
 		try {
-			return client.getAccountInfo().quota.normal;
+			return client.getAccountInfo().quota.normal + client.getAccountInfo().quota.shared;
 		} catch (DbxException e) {
 			e.printStackTrace();
 			return 0;
