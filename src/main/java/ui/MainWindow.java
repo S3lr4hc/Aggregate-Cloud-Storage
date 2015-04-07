@@ -276,7 +276,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 				System.out.println(splitMethod);
 			}
 		});
-		menuOptions.add(cmdSplit);
+		menuOptions.add(cmdSplitMethod);
 		
 		JMenuItem cmdFileLocation = new JMenuItem("Set File Location");
 		cmdFileLocation.addActionListener(new ActionListener() {
