@@ -269,7 +269,8 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 			public void actionPerformed(ActionEvent e) {
 				Object[] options = {"Ratio",
 	                    			"Best Fit"};
-				int in = JOptionPane.showConfirmDialog(null, "Split Method?", "Please Select", JOptionPane.YES_NO_OPTION);
+				
+				int in = JOptionPane.showOptionDialog(null, "Split Method?", "Please Select", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, null);
 				if(in == JOptionPane.YES_OPTION)
 					splitMethod = true;
 				else splitMethod = false;
