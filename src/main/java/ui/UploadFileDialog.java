@@ -140,7 +140,7 @@ public class UploadFileDialog extends JPanel {
 			RemoteDrive service = sortedDrive.get(i);
 			double availableSpace = service.getTotalSize() - service.getUsedSize();
 			System.out.println(availableSpace + service.getServiceNiceName());
-			//driveSizes.add(availableSpace);
+			driveSizes.add(availableSpace);
 		}
 		// FOR TESTING PURPOSES ONLY Ex. of usage with a 12.3 kB file
 		/*driveSizes.add((double) (5 * 1024));
@@ -206,12 +206,12 @@ public class UploadFileDialog extends JPanel {
 					}
 				}
 				UploadMethodWorker umw = null;
-				if(pettyFile && restrict) {
-					umw = new UploadMethodWorker(currFile, largestGoogleDrive.getRootFolder());
+				if(pettyFile || googleCount == 0) {
+					umw = new UploadMethodWorker(currFile, largestDrive.getRootFolder());
 					umw.execute();
 				}
-				else if(pettyFile) {
-					umw = new UploadMethodWorker(currFile, largestDrive.getRootFolder());
+				else if(pettyFile && restrict) {
+					umw = new UploadMethodWorker(currFile, largestGoogleDrive.getRootFolder());
 					umw.execute();
 				}
 				else if(!pettyFile) {
