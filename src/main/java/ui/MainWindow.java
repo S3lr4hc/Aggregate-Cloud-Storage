@@ -781,7 +781,9 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 		}
 		double overAll = (usedSize/totalSize) * 100;
     	overAll = Math.ceil(overAll);
+    	MainWindow.this.statusBar.setStringPainted(true);
 		MainWindow.this.statusBar.setValue((int)overAll);
+		MainWindow.this.statusBar.setString((int)overAll + "% ["+ (MainWindow.usedSize / 1024 / 1024 / 1024) + "/" + (MainWindow.totalSize / 1024 / 1024 / 1024) + "(in GB)]");
 	}
 	
 	/**
