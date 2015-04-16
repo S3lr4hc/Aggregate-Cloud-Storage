@@ -15,6 +15,7 @@ import main.RemoteDrive;
 import main.RemoteEntry;
 import main.RemoteFile;
 import main.RemoteFolder;
+
 import com.dropbox.core.DbxAccountInfo;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
@@ -24,6 +25,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.DbxWriteMode;
+import com.google.api.client.util.DateTime;
 
 /**
  * Provides an implementation of the basic cloud storage functionality for a
@@ -270,6 +272,22 @@ public class Dropbox implements RemoteDrive {
 		@Override
 		public long getSize() {
 			return this.dbxFile.numBytes;
+		}
+		/*d.getUTCFullYear()+'-'
+	      + pad(d.getUTCMonth()+1)+'-'
+	      + pad(d.getUTCDate())+'T'
+	      + pad(d.getUTCHours())+':'
+	      + pad(d.getUTCMinutes())+':'
+	      + pad(d.getUTCSeconds())+'Z'}*/
+		@Override
+		public String getLastModified() {
+			String date = (this.dbxFile.lastModified.getYear()+1900)+"-"+pad(this.dbxFile.lastModified.getMonth()+1)+"-"+pad(this.dbxFile.lastModified.getDate())+"T"
+			+pad(this.dbxFile.lastModified.getHours())+":"+pad(this.dbxFile.lastModified.getMinutes())+":"+pad(this.dbxFile.lastModified.getSeconds())+"Z";
+			return date;
+		}
+		
+		public String pad(int n){
+			return n<10 ? "0"+n : n+"";
 		}
 	}
 	

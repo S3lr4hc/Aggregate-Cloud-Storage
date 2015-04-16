@@ -40,4 +40,6 @@ public interface RemoteFile extends RemoteEntry
 	public boolean delete();
 	
 	public long getSize();
+	
+	public String getLastModified();
 }

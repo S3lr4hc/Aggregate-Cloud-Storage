@@ -87,6 +87,8 @@ public class FileList extends JList<RemoteFile>
 				int index, boolean isSelected, boolean hasFocus) {
 			String mainFile = file.getName();
 			String mainFileExtension = "";
+			long sum = 0;
+			int counter = 0;
 			int curr = mainFile.lastIndexOf(".");
 		    if(curr <= 0){
 		    	//do nothing
@@ -95,7 +97,7 @@ public class FileList extends JList<RemoteFile>
 		    	mainFile = mainFile.substring(0, curr);
 		    }
 		    if(mainFileExtension.equals(".1")) {
-		    	long sum = file.getSize();
+		    	sum = file.getSize();
 		    	for(int i = 0; i < fullModel.getSize(); i++) {
 		    		String fullFile = fullModel.get(i).getName();
 		    		String fullExt = "";
@@ -112,14 +114,44 @@ public class FileList extends JList<RemoteFile>
 		    			else continue;
 		    		}
 		    	}
-		    	this.setText(mainFile + " Split File " + sum + " bytes");
+		    	while(sum > 1000) { 
+		    		sum /= 1024;
+		    		counter++;
+		    	}
+		    	switch(counter) {
+		    	case 1: this.setText(mainFile + " Split File " + file.asFile().getLastModified() + " " + sum + " KB");
+		    			break;
+		    	case 2: this.setText(mainFile + " Split File " + file.asFile().getLastModified() + " " + sum + " MB");
+		    			break;
+		    	case 3: this.setText(mainFile + " Split File " + file.asFile().getLastModified() + " " + sum + " GB");
+		    			break;
+		    	default:for(int i=0; i<counter; i++)sum*=1024; 
+		    			this.setText(mainFile + " Split File " + file.asFile().getLastModified() + " " + sum + " B");
+		    			break;
+		    	}
 		    	this.setIcon(this.iconSplit);
+		    	counter = 0;
 		    }
 		    else {
-		    	this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.getSize() + " bytes");
+		    	sum = file.getSize();
+		    	while(sum > 1000) {
+		    		sum /= 1024;
+		    		counter++;
+		    	}
+		    	switch(counter) {
+		    	case 1: this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.asFile().getLastModified() + " " + sum + " KB");
+		    			break;
+		    	case 2: this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.asFile().getLastModified() + " " + sum + " MB");
+		    			break;
+		    	case 3: this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.asFile().getLastModified() + " " + sum + " GB");
+		    			break;
+		    	default: this.setText(file.getName() + " " + file.getRemoteDrive().getUsername() + "'s " + file.getRemoteDrive().getServiceNiceName() + " " + file.asFile().getLastModified() + " " + file.getSize() + " B");
+		    			break;
+		    	}
 		    	if(file.getRemoteDrive().getServiceNiceName().equals("Dropbox"))
 		    		this.setIcon(this.iconDropbox);
 		    	else this.setIcon(this.iconGDrive);
+		    	counter = 0;
 		    }
 		    
 			Color background = Color.WHITE;
