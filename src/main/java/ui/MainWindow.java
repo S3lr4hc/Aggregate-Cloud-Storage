@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -770,6 +771,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
 	}
 	
 	public void getOverallDriveSize() {
+		DecimalFormat df = new DecimalFormat("####0.000");
 		MainWindow.totalSize = 0;
 		MainWindow.usedSize = 0;
 		List<RemoteDrive> drives = getDriveStore().getAllDrives();
@@ -783,7 +785,7 @@ public class MainWindow extends JFrame implements WindowListener, DriveStoreEven
     	overAll = Math.ceil(overAll);
     	MainWindow.this.statusBar.setStringPainted(true);
 		MainWindow.this.statusBar.setValue((int)overAll);
-		MainWindow.this.statusBar.setString((int)overAll + "% ["+ (MainWindow.usedSize / 1024 / 1024 / 1024) + "/" + (MainWindow.totalSize / 1024 / 1024 / 1024) + "(in GB)]");
+		MainWindow.this.statusBar.setString((int)overAll + "% ["+ df.format(MainWindow.usedSize / 1024 / 1024 / 1024) + "/" + df.format(MainWindow.totalSize / 1024 / 1024 / 1024) + "(in GB)]");
 	}
 	
 	/**
